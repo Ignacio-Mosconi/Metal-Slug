@@ -1,6 +1,7 @@
 package states;
 
 import entities.Player;
+import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.tile.FlxTilemap;
@@ -23,13 +24,15 @@ class PlayState extends FlxState
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		
-		//player = new Player(128, 320);
-		//add(player);
+		cameraSetUp();
+	
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+		
+		FlxG.collide(player, tilemap);
 	}
 	
 	private function tilemapSetUp():Void 
@@ -37,7 +40,8 @@ class PlayState extends FlxState
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 32, 32, "Tiles");
 		tilemap.setTileProperties(0, FlxObject.NONE);
-		tilemap.setTileProperties(1, FlxObject.ANY);
+		for (i in 1...3)
+			tilemap.setTileProperties(i, FlxObject.ANY);
 		add(tilemap);
 	}
 	
@@ -52,5 +56,12 @@ class PlayState extends FlxState
 				player = new Player(x, y);
 				add(player);
 		}
+	}
+	
+	private function cameraSetUp():Void 
+	{
+		camera.follow(player, FlxCameraFollowStyle.SCREEN_BY_SCREEN);
+		camera.followLerp = 0.5;
+		camera.setScrollBounds(0, 6400, 0, 480);
 	}
 }
