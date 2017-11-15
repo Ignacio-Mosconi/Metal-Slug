@@ -96,7 +96,8 @@ class Player extends FlxSprite
 				if (!FlxG.keys.pressed.DOWN)
 				{
 					height = Reg.playerStandingHeight;
-					//offset.y = -32;
+					y -= 16;
+					updateHitbox();
 					currentState = State.IDLE;
 				}				
 		}
@@ -128,7 +129,8 @@ class Player extends FlxSprite
 		if (FlxG.keys.justPressed.DOWN)
 		{		
 			height = Reg.playerCrouchedHeight;
-			//offset.y = 32;
+			y += 16;
+			updateHitbox();
 		}
 	}
 }
