@@ -1,9 +1,10 @@
 package states;
 
-import flixel.FlxState;
 import entities.Player;
+import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.tile.FlxTilemap;
+import flixel.FlxObject;
 import flixel.FlxG;
 
 class PlayState extends FlxState
@@ -21,6 +22,9 @@ class PlayState extends FlxState
 		
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
+		
+		//player = new Player(128, 320);
+		//add(player);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -30,8 +34,8 @@ class PlayState extends FlxState
 	
 	private function tilemapSetUp():Void 
 	{
-		loder = new FlxOgmoLoader(AssetPaths.Level__oel);
-		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 32, 32);
+		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
+		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 32, 32, "Tiles");
 		tilemap.setTileProperties(0, FlxObject.NONE);
 		tilemap.setTileProperties(1, FlxObject.ANY);
 		add(tilemap);
@@ -39,10 +43,10 @@ class PlayState extends FlxState
 	
 	private function entityCreator(entityName:String, entityData:Xml)
 	{
-		var x:Int = Std.paseInt(entityData.get("x");
-		var y:Int = Std.parseInt(entityData.get("y");
+		var x:Int = Std.parseInt(entityData.get("x"));
+		var y:Int = Std.parseInt(entityData.get("y"));
 		
-		switch (enityName)
+		switch (entityName)
 		{
 			case "Player":
 				player = new Player(x, y);
