@@ -16,7 +16,7 @@
     <Width>12800</Width>
     <Height>480</Height>
   </LevelMaximumSize>
-  <Filename>C:\Users\nacho\Documents\HaxeDevelop Projects\Metal-Slug\assets\data\Metal Slug.oep</Filename>
+  <Filename>D:\Práctica Profesional I - Desarrollo de Videojuegos I\HaxeDevelop Projects\Metal-Slug\assets\data\Metal Slug.oep</Filename>
   <AngleMode>Radians</AngleMode>
   <CameraEnabled>false</CameraEnabled>
   <CameraSize>
@@ -64,7 +64,7 @@
     </Tileset>
   </Tilesets>
   <EntityDefinitions>
-    <EntityDefinition Name="Player" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+    <EntityDefinition Name="Player" Limit="1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
       <Size>
         <Width>64</Width>
         <Height>64</Height>

@@ -9,6 +9,7 @@ enum State
 	IDLE;
 	MOVING;
 	JUMPING;
+	CROUCHED;
 }
 
 class Player extends FlxSprite 
@@ -27,19 +28,20 @@ class Player extends FlxSprite
 		animation.add("idle", [0, 1], 6, true, false, false);
 		animation.add("move", [2, 3, 4, 5, 6, 7, 8, 9], 12, true, false, false);
 		animation.add("jump", [0, 1], 6, false, false, false);
+		animation.add("crouch", [0, 1], 6, false, false, false);
 		
 		currentState = State.IDLE;
-		speed = 220;
-		jumpSpeed = -500;
+		speed = Reg.playerNormalSpeed;
+		jumpSpeed = -Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
 	}
 	
 	override public function update(elapsed:Float)
 	{
-		super.update(elapsed);
-		
 		stateMachine();
 		trace(currentState);
+		
+		super.update(elapsed);		
 	}
 	
 	private function stateMachine()
@@ -50,26 +52,34 @@ class Player extends FlxSprite
 				animation.play("idle");
 				move();
 				jump();
+				crouch();
 				
-				if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
+				if (velocity.y != 0)
 					currentState = State.JUMPING;
 				else
+				{
 					if (velocity.x != 0)
 						currentState = State.MOVING;
+					else
+						if (height == Reg.playerCrouchedHeight)
+							currentState = State.CROUCHED;
+				}
 					
 			case State.MOVING:
 				animation.play("move");
 				move();
 				jump();
+				crouch();
 				
-				if (velocity.y != 0 && !isTouching(FlxObject.FLOOR))
+				if (velocity.y != 0)
 					currentState = State.JUMPING;
 				else
 					if (velocity.x == 0)
 						currentState = State.IDLE;
 					
 			case State.JUMPING:
-				animation.play("jump");
+				if (animation.name != "jump")
+					animation.play("jump");
 				
 				if (velocity.y == 0)
 				{
@@ -78,6 +88,17 @@ class Player extends FlxSprite
 					else
 						currentState = State.MOVING;
 				}
+				
+			case State.CROUCHED:
+				if (animation.name != "crouch")
+					animation.play("crouch");
+					
+				if (!FlxG.keys.pressed.DOWN)
+				{
+					height = Reg.playerStandingHeight;
+					//offset.y = -32;
+					currentState = State.IDLE;
+				}				
 		}
 	}
 	
@@ -100,5 +121,14 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.justPressed.S)
 			velocity.y = jumpSpeed;
+	}
+	
+	private function crouch():Void
+	{
+		if (FlxG.keys.justPressed.DOWN)
+		{		
+			height = Reg.playerCrouchedHeight;
+			//offset.y = 32;
+		}
 	}
 }

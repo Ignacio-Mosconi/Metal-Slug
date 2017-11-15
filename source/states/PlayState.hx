@@ -33,6 +33,8 @@ class PlayState extends FlxState
 		super.update(elapsed);
 		
 		FlxG.collide(player, tilemap);
+		
+		//cameraHandling();
 	}
 	
 	private function tilemapSetUp():Void 
@@ -40,7 +42,7 @@ class PlayState extends FlxState
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 32, 32, "Tiles");
 		tilemap.setTileProperties(0, FlxObject.NONE);
-		for (i in 1...3)
+		for (i in 1...4)
 			tilemap.setTileProperties(i, FlxObject.ANY);
 		add(tilemap);
 	}
@@ -60,8 +62,10 @@ class PlayState extends FlxState
 	
 	private function cameraSetUp():Void 
 	{
-		camera.follow(player, FlxCameraFollowStyle.SCREEN_BY_SCREEN);
+		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		camera.followLerp = 0.5;
+		camera.targetOffset.set(64, -64);
 		camera.setScrollBounds(0, 6400, 0, 480);
+		
 	}
 }
