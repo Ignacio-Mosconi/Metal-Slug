@@ -12,8 +12,16 @@ class Bullet extends Weapon
 		
 		loadGraphic(AssetPaths.bullet__png, true, 4, 4, false);
 		direction = Direction;
-		speed = (direction == FlxObject.LEFT) ? -Reg.pistolBulletSpeed: Reg.pistolBulletSpeed;
-		velocity.x = speed;
+		if (direction != FlxObject.UP)
+		{
+			speed = (direction == FlxObject.LEFT) ? -Reg.pistolBulletSpeed: Reg.pistolBulletSpeed;
+			velocity.x = speed;
+		}
+		else
+		{
+			speed = -Reg.pistolBulletSpeed;
+			velocity.y = speed;
+		}
 	}
 	
 	override public function update(elapsed:Float)

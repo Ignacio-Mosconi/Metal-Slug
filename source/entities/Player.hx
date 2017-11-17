@@ -27,12 +27,13 @@ class Player extends FlxSprite
 	private var pistolBullets:FlxTypedGroup<Bullet>;
 	private var hasJustShot:Bool;
 	private var shootingCooldown:Float;
+	private var isAimingUpwards:Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
 
-		loadGraphic(AssetPaths.player__png, true, 64, 64, true);
+		loadGraphic(AssetPaths.player__png, true, 80, 64, true);
 		pixelPerfectPosition = false;
 		setFacingFlip(FlxObject.LEFT, true, false);
 		setFacingFlip(FlxObject.RIGHT, false, false);
@@ -46,14 +47,16 @@ class Player extends FlxSprite
 		animation.add("crouchStab", [20, 21, 22], 12, false, false, false);
 		animation.add("postCrouchStab", [16], 16, false, false, false);
 		animation.add("aimUpwards", [23], 16, false, false, false);
-		animation.add("shoot", [1], 16, false, false, false);
-
+		animation.add("shoot", [24, 25, 26], 12, false, false, false);
+		
+		width = 64;
 		currentState = State.IDLE;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
 		hasJustShot = false;
 		shootingCooldown = 0;
+		isAimingUpwards = false;
 
 		knife = new Knife();
 		knife.kill();
@@ -67,6 +70,14 @@ class Player extends FlxSprite
 	{
 		stateMachine(elapsed);
 		trace(currentState);
+		trace(isAimingUpwards);
+		
+		if (facing == FlxObject.LEFT)
+		{
+			offset.x = 16;
+		}
+		else
+			offset.x = 0;
 
 		super.update(elapsed);
 	}
@@ -170,7 +181,8 @@ class Player extends FlxSprite
 				if (!FlxG.keys.pressed.DOWN)
 				{
 					y -= 16;
-					updateHitbox();
+					height = Reg.playerStandingHeight;
+					offset.y = 0;
 					currentState = State.IDLE;
 				}
 				else
@@ -220,27 +232,37 @@ class Player extends FlxSprite
 			case State.AIMING_UPWARDS:
 				animation.play("aimUpwards");
 				
-				jump();
 				stab();
+				shoot(elapsed);
 				
 				if (!FlxG.keys.pressed.UP)
+				{
+					isAimingUpwards = false;
 					currentState = State.IDLE;
+				}
 				else
 				{
-					if (velocity.y != 0)
-						currentState = State.JUMPING;
-					else 
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
 						if (knife.alive)
+						{
+							isAimingUpwards = false;
 							currentState = State.STABBING;
+						}
 				}
 				
 			case State.SHOOTING:
 				if (animation.name != "shoot")
+				{
 					animation.play("shoot");
+					pistolBullets.getFirstAlive().x = (facing == FlxObject.LEFT) ? x - 4: x + width;
+					pistolBullets.getFirstAlive().y = y + 22;
+				}
 					
 				if (velocity.y == 0)
 					velocity.x = 0;
-				
+					
 				if (animation.name == "shoot" && animation.finished)
 				{
 					if (velocity.y != 0)
@@ -310,6 +332,7 @@ class Player extends FlxSprite
 	{
 		if (FlxG.keys.pressed.UP)
 		{
+			isAimingUpwards = true;
 			currentState = State.AIMING_UPWARDS;
 		}
 	}
@@ -320,17 +343,25 @@ class Player extends FlxSprite
 		{
 			hasJustShot = true;
 			shootingCooldown = 0;
-			Weapon.directionToFace = facing;
-			if (facing == FlxObject.LEFT)
+			if (!isAimingUpwards)
 			{
-				var bullet = new Bullet(x - 4, y + height / 2 - 4, facing);
-				pistolBullets.add(bullet);
+				Weapon.directionToFace = facing;
+				if (facing == FlxObject.LEFT)
+				{
+					var bullet = new Bullet(x - 4, y + 24, facing);
+					pistolBullets.add(bullet);
+				}
+				else
+				{
+					var bullet = new Bullet(x + width, y + 24, facing);
+					pistolBullets.add(bullet);
+				}			
 			}
 			else
 			{
-				var bullet = new Bullet(x + width, y + height / 2 - 4, facing);
+				var bullet = new Bullet(x + width / 2, y, FlxObject.UP);
 				pistolBullets.add(bullet);
-			}			
+			}
 		}
 		else
 		{
