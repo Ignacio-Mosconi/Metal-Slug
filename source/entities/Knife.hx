@@ -7,7 +7,7 @@ class Knife extends Weapon
 	{
 		super(X, Y);
 		
-		makeGraphic(32, 16, 0x00000000, false);
+		makeGraphic(32, 48, 0x00000000, false);
 	}
 	
 	override public function update(elapsed:Float)
