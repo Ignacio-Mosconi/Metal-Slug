@@ -66,6 +66,7 @@ class PlayState extends FlxState
 		camera.followLerp = 0.5;
 		camera.targetOffset.set(64, -64);
 		camera.setScrollBounds(0, 6400, 0, 480);
+		camera.pixelPerfectRender = false;
 		
 	}
 }
