@@ -3,6 +3,7 @@ package entities;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 enum State
 {
@@ -14,6 +15,7 @@ enum State
 	CROUCHED;
 	STABBING;
 	AIMING_UPWARDS;
+	SHOOTING;
 }
 
 class Player extends FlxSprite
@@ -22,6 +24,9 @@ class Player extends FlxSprite
 	private var speed:Int;
 	private var jumpSpeed:Int;
 	private var knife:Knife;
+	private var pistolBullets:FlxTypedGroup<Bullet>;
+	private var hasJustShot:Bool;
+	private var shootingCooldown:Float;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -41,26 +46,32 @@ class Player extends FlxSprite
 		animation.add("crouchStab", [20, 21, 22], 12, false, false, false);
 		animation.add("postCrouchStab", [16], 16, false, false, false);
 		animation.add("aimUpwards", [23], 16, false, false, false);
+		animation.add("shoot", [1], 16, false, false, false);
 
 		currentState = State.IDLE;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
+		hasJustShot = false;
+		shootingCooldown = 0;
 
 		knife = new Knife();
 		knife.kill();
 		FlxG.state.add(knife);
+		
+		pistolBullets = new FlxTypedGroup<Bullet>();
+		FlxG.state.add(pistolBullets);
 	}
 
 	override public function update(elapsed:Float)
 	{
-		stateMachine();
+		stateMachine(elapsed);
 		trace(currentState);
 
 		super.update(elapsed);
 	}
 
-	private function stateMachine()
+	private function stateMachine(elapsed:Float)
 	{
 		switch (currentState)
 		{
@@ -71,16 +82,22 @@ class Player extends FlxSprite
 				crouch();
 				stab();
 				aimUpwards();
+				shoot(elapsed);
 
 				if (velocity.x != 0)
 					currentState = State.MOVING;
 				else
 				{
-					if (knife.alive)
-						currentState = State.STABBING;
-					else 
-						if (height == Reg.playerCrouchedHeight)
-							currentState = State.CROUCHED;
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
+					{
+						if (knife.alive)
+							currentState = State.STABBING;
+						else
+							if (height == Reg.playerCrouchedHeight)
+								currentState = State.CROUCHED;
+					}
 				}
 
 			case State.MOVING:
@@ -88,12 +105,18 @@ class Player extends FlxSprite
 				move();
 				jump();
 				stab();
+				shoot(elapsed);
 
 				if (velocity.x == 0)
 					currentState = State.IDLE;
-				else 
-					if (knife.alive)
-						currentState = State.STABBING;
+				else
+				{
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
+						if (knife.alive)
+							currentState = State.STABBING;
+				}
 
 			case State.PREJUMPING:
 				if (animation.name != "preJump")
@@ -110,12 +133,18 @@ class Player extends FlxSprite
 					animation.play("jump");
 
 				stab();
+				shoot(elapsed);
 
 				if (velocity.y == 0)
 					currentState = State.LANDING;
-				else 
-					if (knife.alive)
-						currentState = State.STABBING;
+				else
+				{
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
+						if (knife.alive)
+							currentState = State.STABBING;
+				}
 
 			case State.LANDING:
 				if (animation.name != "land")
@@ -136,6 +165,7 @@ class Player extends FlxSprite
 					if (animation.name != "postCrouchStab")
 						animation.play("postCrouchStab");
 				stab();
+				shoot(elapsed);
 
 				if (!FlxG.keys.pressed.DOWN)
 				{
@@ -143,9 +173,14 @@ class Player extends FlxSprite
 					updateHitbox();
 					currentState = State.IDLE;
 				}
-				else 
-					if (knife.alive)
-						currentState = State.STABBING;
+				else
+				{
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
+						if (knife.alive)
+							currentState = State.STABBING;
+				}
 
 			case State.STABBING:
 				if (height == Reg.playerStandingHeight)
@@ -198,7 +233,32 @@ class Player extends FlxSprite
 						if (knife.alive)
 							currentState = State.STABBING;
 				}
-		}
+				
+			case State.SHOOTING:
+				if (animation.name != "shoot")
+					animation.play("shoot");
+					
+				if (velocity.y == 0)
+					velocity.x = 0;
+				
+				if (animation.name == "shoot" && animation.finished)
+				{
+					if (velocity.y != 0)
+						currentState = State.JUMPING;
+					else
+					{
+						if (velocity.x != 0)
+							currentState = State.MOVING;
+						else
+						{
+							if (height == Reg.playerCrouchedHeight)
+								currentState = State.CROUCHED;
+							else
+								currentState = State.IDLE;
+						}
+					}
+				}
+		}	
 	}
 
 	private function move():Void
@@ -251,6 +311,32 @@ class Player extends FlxSprite
 		if (FlxG.keys.pressed.UP)
 		{
 			currentState = State.AIMING_UPWARDS;
+		}
+	}
+	
+	private function shoot(time:Float):Void
+	{
+		if (FlxG.keys.justPressed.A && !hasJustShot)
+		{
+			hasJustShot = true;
+			shootingCooldown = 0;
+			Weapon.directionToFace = facing;
+			if (facing == FlxObject.LEFT)
+			{
+				var bullet = new Bullet(x - 4, y + height / 2 - 4, facing);
+				pistolBullets.add(bullet);
+			}
+			else
+			{
+				var bullet = new Bullet(x + width, y + height / 2 - 4, facing);
+				pistolBullets.add(bullet);
+			}			
+		}
+		else
+		{
+			shootingCooldown += time;
+			if (shootingCooldown >= 0.25)
+				hasJustShot = false;
 		}
 	}
 }

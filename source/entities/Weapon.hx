@@ -29,5 +29,4 @@ class Weapon extends FlxSprite
 	{
 		return directionToFace = value;
 	}
-	
 }

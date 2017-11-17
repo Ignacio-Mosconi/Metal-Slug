@@ -1,9 +1,11 @@
 package states;
 
+import entities.Bullet;
 import entities.Player;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 import flixel.FlxObject;
 import flixel.FlxG;
@@ -33,8 +35,6 @@ class PlayState extends FlxState
 		super.update(elapsed);
 		
 		FlxG.collide(player, tilemap);
-		
-		//cameraHandling();
 	}
 	
 	private function tilemapSetUp():Void 
