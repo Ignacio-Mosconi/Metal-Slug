@@ -48,6 +48,7 @@ class Player extends FlxSprite
 		animation.add("postCrouchStab", [16], 16, false, false, false);
 		animation.add("aimUpwards", [23], 16, false, false, false);
 		animation.add("shoot", [24, 25, 26], 12, false, false, false);
+		animation.add("crouchShoot", [27, 28, 29], false, false, false);
 		
 		width = 64;
 		currentState = State.IDLE;
@@ -69,16 +70,10 @@ class Player extends FlxSprite
 	override public function update(elapsed:Float)
 	{
 		stateMachine(elapsed);
-		trace(currentState);
-		trace(isAimingUpwards);
+		checkHitboxOffset();
 		
-		if (facing == FlxObject.LEFT)
-		{
-			offset.x = 16;
-		}
-		else
-			offset.x = 0;
-
+		trace(currentState);
+		
 		super.update(elapsed);
 	}
 
@@ -170,8 +165,11 @@ class Player extends FlxSprite
 				}
 
 			case State.CROUCHED:
-				if (animation.name != "crouch" && animation.name != "crouchStab" && animation.name != "postCrouchStab")
-					animation.play("crouch");
+				if (animation.name != "crouch" && animation.name != "crouchStab" && animation.name != "crouchShoot")
+				{
+					if (animation.name != "postCrouchStab")
+						animation.play("crouch");
+				}
 				else
 					if (animation.name != "postCrouchStab")
 						animation.play("postCrouchStab");
@@ -253,17 +251,30 @@ class Player extends FlxSprite
 				}
 				
 			case State.SHOOTING:
-				if (animation.name != "shoot")
+				if (height == Reg.playerStandingHeight)
 				{
-					animation.play("shoot");
-					pistolBullets.getFirstAlive().x = (facing == FlxObject.LEFT) ? x - 4: x + width;
-					pistolBullets.getFirstAlive().y = y + 22;
+					// Improve this!
+					if (animation.name != "shoot")
+					{
+						animation.play("shoot");
+						pistolBullets.getFirstAlive().x = (facing == FlxObject.LEFT) ? x - 4: x + width;
+						pistolBullets.getFirstAlive().y = y + 22;
+					}
+				}
+				else
+				{
+					if (animation.name != "crouchShoot")
+					{
+						animation.play("crouchShoot");
+						pistolBullets.getFirstAlive().x = (facing == FlxObject.LEFT) ? x - 4: x + width;
+						pistolBullets.getFirstAlive().y = y + 22;
+					}
 				}
 					
 				if (velocity.y == 0)
 					velocity.x = 0;
 					
-				if (animation.name == "shoot" && animation.finished)
+				if ((animation.name == "shoot" || animation.name == "crouchShoot") && animation.finished)
 				{
 					if (velocity.y != 0)
 						currentState = State.JUMPING;
@@ -369,5 +380,13 @@ class Player extends FlxSprite
 			if (shootingCooldown >= 0.25)
 				hasJustShot = false;
 		}
+	}
+	
+	private function checkHitboxOffset():Void 
+	{
+		if (facing == FlxObject.LEFT)
+			offset.x = 16;
+		else
+			offset.x = 0;
 	}
 }
