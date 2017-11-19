@@ -9,6 +9,8 @@ class Reg
 	static public var playerCrouchedHeight:Int = 48;
 	// Wapons
 	static public var pistolBulletSpeed:Int = 440;
+	static public var pistolRateOfFire:Float = 0.1;
+	static public var pistolMagSize:Int = 7;
 	// Game
 	static public var gravity:Int = 1400;
 	
