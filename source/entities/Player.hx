@@ -16,6 +16,7 @@ enum State
 	STABBING;
 	AIMING_UPWARDS;
 	SHOOTING;
+	RELOADING;
 }
 
 class Player extends FlxSprite
@@ -28,6 +29,8 @@ class Player extends FlxSprite
 	private var hasJustShot:Bool;
 	private var shootingCooldown:Float;
 	private var isAimingUpwards:Bool;
+	private var totalAmmo:Int;
+	private var magAmmo:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -50,6 +53,7 @@ class Player extends FlxSprite
 		animation.add("shoot", [24, 25, 26], 12, false, false, false);
 		animation.add("crouchShoot", [27, 28, 29], 12, false, false, false);
 		animation.add("shootUpwards", [15, 30, 31, 32], 12, false, false, false);
+		animation.add("reload", [33, 34, 35, 36, 37, 38, 39], 8, false, false, false);
 		
 		width = 64;
 		currentState = State.IDLE;
@@ -59,6 +63,8 @@ class Player extends FlxSprite
 		hasJustShot = false;
 		shootingCooldown = 0;
 		isAimingUpwards = false;
+		totalAmmo = 50;
+		magAmmo = 7;
 
 		knife = new Knife();
 		knife.kill();
@@ -74,7 +80,8 @@ class Player extends FlxSprite
 		checkHitboxOffset();
 		
 		trace(currentState);
-		trace(isAimingUpwards);
+		trace(magAmmo);
+		trace(totalAmmo);
 		
 		super.update(elapsed);
 	}
@@ -91,6 +98,7 @@ class Player extends FlxSprite
 				stab();
 				aimUpwards();
 				shoot(elapsed);
+				reload();
 
 				if (velocity.x != 0)
 					currentState = State.MOVING;
@@ -277,6 +285,13 @@ class Player extends FlxSprite
 						}
 					}
 				}
+				
+			case State.RELOADING:
+				if (animation.name != "reload")
+					animation.play("reload");
+				
+				if (animation.name == "reload" && animation.finished)
+					currentState = State.IDLE;
 		}
 	}
 
@@ -336,11 +351,12 @@ class Player extends FlxSprite
 	
 	private function shoot(time:Float):Void
 	{
-		if (FlxG.keys.justPressed.A && !hasJustShot)
+		if (FlxG.keys.justPressed.A && !hasJustShot && magAmmo > 0)
 		{
 			currentState = State.SHOOTING;
 			hasJustShot = true;
 			shootingCooldown = 0;
+			magAmmo--;
 			if (!isAimingUpwards)
 			{
 				Weapon.directionToFace = facing;
@@ -366,6 +382,26 @@ class Player extends FlxSprite
 			shootingCooldown += time;
 			if (shootingCooldown >= Reg.pistolRateOfFire)
 				hasJustShot = false;
+		}
+	}
+	
+	private function reload():Void
+	{
+		if (FlxG.keys.justPressed.W)
+		{
+			if (totalAmmo >= Reg.pistolMagSize)
+			{
+				currentState = State.RELOADING;
+				magAmmo = Reg.pistolMagSize;
+				totalAmmo -= Reg.pistolMagSize;
+			}
+			else
+				if (totalAmmo > 0)
+				{
+					currentState = State.RELOADING;
+					magAmmo = totalAmmo;
+					totalAmmo = 0;
+				}
 		}
 	}
 	
