@@ -15,14 +15,12 @@ class Weapon extends FlxSprite
 		
 		setFacingFlip(FlxObject.LEFT, true, false);
 		setFacingFlip(FlxObject.RIGHT, false, false);
+		facing = directionToFace;
 	}
 	
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		
-		if (facing != directionToFace)
-			facing = directionToFace;
 	}
 	
 	static function set_directionToFace(value:Int):Int 
