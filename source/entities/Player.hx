@@ -33,6 +33,7 @@ class Player extends FlxSprite
 	private var isAimingUpwards:Bool;
 	private var totalAmmo:Int;
 	private var magAmmo:Int;
+	private var grenadesAmmo:Int;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -57,6 +58,7 @@ class Player extends FlxSprite
 		animation.add("shootUpwards", [15, 30, 31, 32], 12, false, false, false);
 		animation.add("reload", [33, 34, 35, 36, 37, 38, 39], 8, false, false, false);
 		animation.add("throwGrenade", [40, 41, 42], 8, false, false, false);
+		animation.add("crouchThrowGrenade", [43, 44, 45], 8, false, false, false);
 		
 		width = 64;
 		currentState = State.IDLE;
@@ -68,6 +70,7 @@ class Player extends FlxSprite
 		isAimingUpwards = false;
 		totalAmmo = 50;
 		magAmmo = 7;
+		grenadesAmmo = 3;
 
 		knife = new Knife();
 		knife.kill();
@@ -85,8 +88,6 @@ class Player extends FlxSprite
 		checkHitboxOffset();
 		
 		trace(currentState);
-		trace(magAmmo);
-		trace(totalAmmo);
 		
 		super.update(elapsed);
 	}
@@ -123,6 +124,7 @@ class Player extends FlxSprite
 				jump();
 				stab();
 				shoot(elapsed);
+				throwGrenade();
 
 				if (velocity.x == 0)
 					currentState = State.IDLE;
@@ -148,6 +150,7 @@ class Player extends FlxSprite
 
 				stab();
 				shoot(elapsed);
+				throwGrenade();
 
 				if (velocity.y == 0)
 					currentState = State.LANDING;
@@ -170,7 +173,8 @@ class Player extends FlxSprite
 				}
 
 			case State.CROUCHED:
-				if (animation.name != "crouch" && animation.name != "crouchStab" && animation.name != "crouchShoot")
+				if (animation.name != "crouch" && animation.name != "crouchStab" 
+				&& animation.name != "crouchShoot" && animation.name != "crouchThrowGrenade")
 				{
 					if (animation.name != "postCrouchStab")
 						animation.play("crouch");
@@ -180,6 +184,7 @@ class Player extends FlxSprite
 						animation.play("postCrouchStab");
 				stab();
 				shoot(elapsed);
+				throwGrenade();
 
 				if (!FlxG.keys.pressed.DOWN)
 				{
@@ -234,6 +239,8 @@ class Player extends FlxSprite
 				
 				stab();
 				shoot(elapsed);
+				reload();
+				throwGrenade();
 				
 				if (!FlxG.keys.pressed.UP)
 				{
@@ -296,15 +303,56 @@ class Player extends FlxSprite
 				if (animation.name != "reload")
 					animation.play("reload");
 				
+				velocity.x = 0;
+				
 				if (animation.name == "reload" && animation.finished)
-					currentState = State.IDLE;
+				{
+					if (isAimingUpwards)
+						currentState = State.AIMING_UPWARDS;
+					else
+						currentState = State.IDLE;
+				}
 					
 			case State.THROWING_GRENADE:
-				if (animation.name != "throwGrenade")
-					animation.play("throwGrenade");
+				if (height == Reg.playerStandingHeight)
+				{
+					if (animation.name != "throwGrenade")
+						animation.play("throwGrenade");
+				}
+				else
+					if (animation.name != "crouchThrowGrenade")
+						animation.play("crouchThrowGrenade");
+						
+				if (velocity.y == 0)
+					velocity.x = 0;
 					
-				if (animation.name == "throwGrenade" && animation.finished)
-					currentState = State.IDLE;
+				if ((animation.name == "throwGrenade" || animation.name == "crouchThrowGrenade") && animation.finished)
+				{
+					if (facing == FlxObject.LEFT)
+					{
+						var grenade = new Grenade(x + 8, y, facing);
+						grenades.add(grenade);
+					}
+					else
+					{
+						var grenade = new Grenade(x + width, y, facing);
+						grenades.add(grenade);
+					}
+					if (velocity.y != 0)
+						currentState = State.JUMPING;
+					else
+					{
+						if (velocity.x != 0)
+							currentState = State.MOVING;
+						else
+						{
+							if (height == Reg.playerCrouchedHeight)
+								currentState = State.CROUCHED;
+							else
+								currentState = State.IDLE;
+						}
+					}
+				}
 		}
 	}
 
@@ -420,20 +468,11 @@ class Player extends FlxSprite
 	
 	private function throwGrenade():Void
 	{
-		if (FlxG.keys.justPressed.E)
+		if (FlxG.keys.justPressed.E && grenadesAmmo > 0)
 		{
 			currentState = State.THROWING_GRENADE;
 			Weapon.directionToFace = facing;
-			if (facing == FlxObject.LEFT)
-			{
-				var grenade = new Grenade(x + 8, y);
-				grenades.add(grenade);
-			}
-			else
-			{
-				var grenade = new Grenade(x + width, y);
-				grenades.add(grenade);
-			}
+			grenadesAmmo--;
 		}
 	}
 	
