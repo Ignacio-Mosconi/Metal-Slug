@@ -4,6 +4,7 @@ import flixel.math.FlxRandom;
 class Reg 
 {
 	// Player
+	static public var playerMaxLives:Int = 3;
 	static public var playerNormalSpeed:Int = 220;
 	static public var playerJumpSpeed:Int = -500;
 	static public var playerStandingHeight:Int = 64;
@@ -14,9 +15,11 @@ class Reg
 	static public var pistolMagSize:Int = 7;
 	static public var grenadeSpeed:Int = 300;
 	// Game
-	static public var gravity:Int = 1400;
 	static public var random:FlxRandom = new FlxRandom();
+	static public var gravity:Int = 1400;
+	static public var score:Int = 0;
 	// Enemies
 	static public var droneFlyingSpeed:Int = -100;
+	static public var droneScore:Int = 2;
 	
 }

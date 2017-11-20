@@ -4,7 +4,8 @@ import flixel.FlxSprite;
 
 class Enemy extends FlxSprite
 {
-
+	private var speed:Int;
+	
 	public function new(?X, ?Y) 
 	{
 		super(X, Y);
@@ -12,4 +13,8 @@ class Enemy extends FlxSprite
 		pixelPerfectPosition = false;
 	}
 	
+	public function getDamage():Void
+	{
+		destroy();
+	}
 }

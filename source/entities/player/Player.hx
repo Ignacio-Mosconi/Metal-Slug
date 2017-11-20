@@ -3,6 +3,7 @@ package entities.player;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 enum State
@@ -22,6 +23,7 @@ enum State
 
 class Player extends FlxSprite
 {
+	static private var lives:Int;
 	private var currentState:State;
 	private var speed:Int;
 	private var jumpSpeed:Int;
@@ -34,32 +36,21 @@ class Player extends FlxSprite
 	private var totalAmmo:Int;
 	private var magAmmo:Int;
 	private var grenadesAmmo:Int;
+	public var isInvincible(get, null):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
-
+		
+		// Graphics & Animations
 		loadGraphic(AssetPaths.player__png, true, 80, 64, true);
 		pixelPerfectPosition = false;
 		setFacingFlip(FlxObject.LEFT, true, false);
 		setFacingFlip(FlxObject.RIGHT, false, false);
-		animation.add("idle", [0, 1, 2, 1], 6, true, false, false);
-		animation.add("move", [3, 4, 5, 6, 7, 8, 9, 10], 12, true, false, false);
-		animation.add("preJump", [11, 12], 24, false, false, false);
-		animation.add("jump", [13], 16, false, false, false);
-		animation.add("land", [14], 16, false, false, false);
-		animation.add("crouch", [15, 16], 8, false, false, false);
-		animation.add("stab", [17, 18, 19], 12, false, false, false);
-		animation.add("crouchStab", [20, 21, 22], 12, false, false, false);
-		animation.add("postCrouchStab", [16], 16, false, false, false);
-		animation.add("aimUpwards", [23], 16, false, false, false);
-		animation.add("shoot", [24, 25, 26], 12, false, false, false);
-		animation.add("crouchShoot", [27, 28, 29], 12, false, false, false);
-		animation.add("shootUpwards", [15, 30, 31, 32], 12, false, false, false);
-		animation.add("reload", [33, 34, 35, 36, 37, 38, 39], 8, false, false, false);
-		animation.add("throwGrenade", [40, 41, 42], 8, false, false, false);
-		animation.add("crouchThrowGrenade", [43, 44, 45], 8, false, false, false);
+		animationsSetUp();
 		
+		// Attributes Initialization
+		lives = Reg.playerMaxLives;
 		width = 64;
 		currentState = State.IDLE;
 		speed = Reg.playerNormalSpeed;
@@ -71,11 +62,12 @@ class Player extends FlxSprite
 		totalAmmo = 50;
 		magAmmo = 7;
 		grenadesAmmo = 3;
-
+		isInvincible = false;
+		
+		// Weapons Creation
 		knife = new Knife();
 		knife.kill();
 		FlxG.state.add(knife);
-		
 		pistolBullets = new FlxTypedGroup<Bullet>();
 		FlxG.state.add(pistolBullets);
 		grenades = new FlxTypedGroup<Grenade>();
@@ -152,7 +144,7 @@ class Player extends FlxSprite
 				shoot(elapsed);
 				throwGrenade();
 
-				if (velocity.y == 0)
+				if (velocity.y == 0 && !hasJustShot)
 					currentState = State.LANDING;
 				else
 				{
@@ -355,7 +347,8 @@ class Player extends FlxSprite
 				}
 		}
 	}
-
+	
+	// Action Methods
 	private function move():Void
 	{
 		velocity.x = 0;
@@ -476,11 +469,59 @@ class Player extends FlxSprite
 		}
 	}
 	
+	// Other Methods
 	private function checkHitboxOffset():Void 
 	{
 		if (facing == FlxObject.LEFT)
 			offset.x = 16;
 		else
 			offset.x = 0;
+	}
+	
+	private function animationsSetUp():Void 
+	{
+		animation.add("idle", [0, 1, 2, 1], 6, true, false, false);
+		animation.add("move", [3, 4, 5, 6, 7, 8, 9, 10], 12, true, false, false);
+		animation.add("preJump", [11, 12], 24, false, false, false);
+		animation.add("jump", [13], 16, false, false, false);
+		animation.add("land", [14], 16, false, false, false);
+		animation.add("crouch", [15, 16], 8, false, false, false);
+		animation.add("stab", [17, 18, 19], 12, false, false, false);
+		animation.add("crouchStab", [20, 21, 22], 12, false, false, false);
+		animation.add("postCrouchStab", [16], 16, false, false, false);
+		animation.add("aimUpwards", [23], 16, false, false, false);
+		animation.add("shoot", [24, 25, 26], 12, false, false, false);
+		animation.add("crouchShoot", [27, 28, 29], 12, false, false, false);
+		animation.add("shootUpwards", [15, 30, 31, 32], 12, false, false, false);
+		animation.add("reload", [33, 34, 35, 36, 37, 38, 39], 8, false, false, false);
+		animation.add("throwGrenade", [40, 41, 42], 8, false, false, false);
+		animation.add("crouchThrowGrenade", [43, 44, 45], 8, false, false, false);
+	}
+	
+	override public function kill():Void
+	{
+		super.kill();
+		
+		lives--;
+		reset(camera.scroll.x + 64, camera.scroll.y + 64);
+	}
+	
+	override public function reset(X, Y):Void
+	{
+		super.reset(X, Y);
+		
+		isInvincible = true;
+		FlxFlicker.flicker(this, 3, 0.25, true, true, endInvincibility);
+	}
+	
+	private function endInvincibility(f:FlxFlicker):Void 
+	{
+		isInvincible = false;
+	}
+	
+	// Getters & Setters
+	function get_isInvincible():Bool 
+	{
+		return isInvincible;
 	}
 }

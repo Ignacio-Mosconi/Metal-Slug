@@ -2,7 +2,6 @@ package entities.enemies;
 
 class Drone extends Enemy 
 {
-	private var speed:Int;
 	private var amplitude:Int;
 	private var frequency:Float;
 	private var time:Float;
@@ -17,7 +16,6 @@ class Drone extends Enemy
 		animation.play("fly");
 		
 		speed = Reg.droneFlyingSpeed;
-		velocity.x = speed;
 		amplitude = Reg.random.int(32, 64);
 		frequency = Math.PI;
 		time = 0;
@@ -30,6 +28,6 @@ class Drone extends Enemy
 		
 		time += elapsed;
 		y = amplitude * Math.cos(frequency * time) + originY;
-	}
-	
+		velocity.x = speed;
+	}	
 }

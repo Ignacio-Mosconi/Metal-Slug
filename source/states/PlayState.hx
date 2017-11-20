@@ -2,17 +2,21 @@ package states;
 
 import entities.enemies.Drone;
 import entities.enemies.Enemy;
+import entities.player.Bullet;
 import entities.player.Player;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 import flixel.FlxObject;
 import flixel.FlxG;
+import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
+	private var entities:FlxGroup;
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
@@ -22,10 +26,12 @@ class PlayState extends FlxState
 	{
 		super.create();
 		
-		FlxG.worldBounds.set(0, 0, 4800, 384);
+		FlxG.worldBounds.set(0, 0, 3200, 512);
 		FlxG.mouse.visible = false;
 		
+		entities = new FlxGroup();
 		enemies = new FlxTypedGroup<Enemy>();
+		entities.add(enemies);
 		add(enemies);
 		
 		tilemapSetUp();
@@ -38,9 +44,14 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		
-		FlxG.collide(player, tilemap);
+		FlxG.overlap(entities, tilemap, enityTileMapCollision);
+		FlxG.overlap(player, enemies, playerEnemyCollision);
+		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
+		
+		trace(Reg.score);
 	}
 	
+	// Set Up Methods
 	private function tilemapSetUp():Void 
 	{
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
@@ -60,6 +71,7 @@ class PlayState extends FlxState
 		{
 			case "Player":
 				player = new Player(x, y);
+				entities.add(player);
 				add(player);
 			case "Drone":
 				var drone = new Drone(x, y);
@@ -72,7 +84,33 @@ class PlayState extends FlxState
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		camera.followLerp = 0.5;
 		camera.targetOffset.set(96, -64);
-		camera.setScrollBounds(0, 4800, 0, 384);
+		camera.setScrollBounds(0, 3200, 0, 512);
 		camera.pixelPerfectRender = false;		
+	}
+	
+	// Collision Methods	
+	private function enityTileMapCollision(e:Dynamic, t:FlxTilemap):Void 
+	{
+		if (e.getType() != "Drone")
+		{
+			FlxObject.separate(e, t);
+		}
+	}
+	
+	private function playerEnemyCollision(p:Player, e:Enemy):Void 
+	{
+		if (!player.isInvincible)
+		{
+			FlxObject.separate(p, e);
+			camera.shake(0.01, 0.25);
+			camera.flash(FlxColor.RED, 0.25);
+			p.kill();
+		}
+	}
+	
+	private function bulletEnemyCollision(b:Bullet, e:Enemy):Void
+	{
+		e.getDamage();
+		player.pistolBullets.remove(b);
 	}
 }

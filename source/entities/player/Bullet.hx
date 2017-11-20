@@ -3,8 +3,8 @@ import flixel.FlxObject;
 
 class Bullet extends Weapon 
 {
-	private var direction:Int;
 	private var speed:Int;
+	private var direction:Int;
 	
 	public function new(?X:Float=0, ?Y:Float=0, Direction:Int) 
 	{
