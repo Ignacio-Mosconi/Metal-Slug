@@ -1,4 +1,4 @@
-package entities;
+package entities.player;
 
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -11,6 +11,7 @@ class Weapon extends FlxSprite
 	{
 		super(X, Y);
 		
+		pixelPerfectPosition = false;
 		directionToFace = FlxObject.RIGHT;
 		
 		setFacingFlip(FlxObject.LEFT, true, false);
@@ -21,6 +22,13 @@ class Weapon extends FlxSprite
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+	}
+	
+	override public function reset(X, Y)
+	{
+		super.reset(X, Y);
+		
+		facing = directionToFace;
 	}
 	
 	static function set_directionToFace(value:Int):Int 

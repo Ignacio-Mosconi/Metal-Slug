@@ -1,4 +1,4 @@
-package entities;
+package entities.player;
 
 import flixel.FlxG;
 import flixel.FlxObject;

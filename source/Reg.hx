@@ -1,4 +1,5 @@
 package;
+import flixel.math.FlxRandom;
 
 class Reg 
 {
@@ -14,5 +15,8 @@ class Reg
 	static public var grenadeSpeed:Int = 300;
 	// Game
 	static public var gravity:Int = 1400;
+	static public var random:FlxRandom = new FlxRandom();
+	// Enemies
+	static public var droneFlyingSpeed:Int = -100;
 	
 }

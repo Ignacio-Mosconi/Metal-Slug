@@ -16,7 +16,7 @@
     <Width>12800</Width>
     <Height>480</Height>
   </LevelMaximumSize>
-  <Filename>D:\Práctica Profesional I - Desarrollo de Videojuegos I\HaxeDevelop Projects\Metal-Slug\assets\data\Metal Slug.oep</Filename>
+  <Filename>C:\Users\nacho\Documents\HaxeDevelop Projects\Metal-Slug\assets\data\Metal Slug.oep</Filename>
   <AngleMode>Radians</AngleMode>
   <CameraEnabled>false</CameraEnabled>
   <CameraSize>
@@ -74,6 +74,21 @@
         <Y>0</Y>
       </Origin>
       <ImageDefinition DrawMode="Image" ImagePath="..\images\player.png" Tiled="true">
+        <RectColor A="255" R="255" G="0" B="0" />
+      </ImageDefinition>
+      <ValueDefinitions />
+      <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
+    </EntityDefinition>
+    <EntityDefinition Name="Drone" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+      <Size>
+        <Width>32</Width>
+        <Height>32</Height>
+      </Size>
+      <Origin>
+        <X>0</X>
+        <Y>0</Y>
+      </Origin>
+      <ImageDefinition DrawMode="Image" ImagePath="..\images\drone.png" Tiled="true">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions />

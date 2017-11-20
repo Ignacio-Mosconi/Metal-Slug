@@ -1,4 +1,4 @@
-package entities;
+package entities.player;
 import flixel.FlxObject;
 
 class Bullet extends Weapon 
@@ -11,7 +11,21 @@ class Bullet extends Weapon
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.bullet__png, true, 4, 4, false);
+		
 		direction = Direction;
+		velocitySetUp();
+	}
+	
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		
+		if (!isOnScreen())
+			destroy();	
+	}
+	
+	private function velocitySetUp():Void 
+	{
 		if (direction != FlxObject.UP)
 		{
 			speed = (direction == FlxObject.LEFT) ? -Reg.pistolBulletSpeed: Reg.pistolBulletSpeed;
@@ -22,13 +36,5 @@ class Bullet extends Weapon
 			speed = -Reg.pistolBulletSpeed;
 			velocity.y = speed;
 		}
-	}
-	
-	override public function update(elapsed:Float)
-	{
-		super.update(elapsed);
-		
-		if (!isOnScreen())
-			destroy();	
 	}
 }

@@ -1,7 +1,8 @@
 package states;
 
-import entities.Bullet;
-import entities.Player;
+import entities.enemies.Drone;
+import entities.enemies.Enemy;
+import entities.player.Player;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
@@ -15,19 +16,22 @@ class PlayState extends FlxState
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
+	private var enemies:FlxTypedGroup<Enemy>;
 	
 	override public function create():Void
 	{
 		super.create();
 		
-		FlxG.worldBounds.set(0, 0, 6400, 480);
+		FlxG.worldBounds.set(0, 0, 4800, 384);
 		FlxG.mouse.visible = false;
+		
+		enemies = new FlxTypedGroup<Enemy>();
+		add(enemies);
 		
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		
-		cameraSetUp();
-	
+		cameraSetUp();	
 	}
 
 	override public function update(elapsed:Float):Void
@@ -57,6 +61,9 @@ class PlayState extends FlxState
 			case "Player":
 				player = new Player(x, y);
 				add(player);
+			case "Drone":
+				var drone = new Drone(x, y);
+				enemies.add(drone);
 		}
 	}
 	
@@ -64,9 +71,8 @@ class PlayState extends FlxState
 	{
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		camera.followLerp = 0.5;
-		camera.targetOffset.set(64, -64);
-		camera.setScrollBounds(0, 6400, 0, 480);
-		camera.pixelPerfectRender = false;
-		
+		camera.targetOffset.set(96, -64);
+		camera.setScrollBounds(0, 4800, 0, 384);
+		camera.pixelPerfectRender = false;		
 	}
 }

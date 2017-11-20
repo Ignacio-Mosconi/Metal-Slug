@@ -1,4 +1,4 @@
-package entities;
+package entities.player;
 import flixel.FlxObject;
 
 class Grenade extends Weapon 
@@ -13,10 +13,22 @@ class Grenade extends Weapon
 		loadGraphic(AssetPaths.grenade__png, false, 16, 16, false);
 		
 		speed = Reg.grenadeSpeed;
-		velocity.y = -speed;
 		acceleration.y = Reg.gravity;
-		direction = Direction;
+		direction = Direction;	
+		velocitySetUp();
+	}
+	
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
 		
+		if (!isOnScreen())
+			destroy();
+	}
+	
+	private function velocitySetUp():Void 
+	{
+		velocity.y = -speed;
 		if (direction == FlxObject.LEFT)
 		{
 			velocity.x = -speed;
@@ -27,13 +39,5 @@ class Grenade extends Weapon
 			velocity.x = speed;
 			angularVelocity = 300;
 		}
-	}
-	
-	override public function update(elapsed:Float)
-	{
-		super.update(elapsed);
-		
-		if (!isOnScreen())
-			destroy();
 	}
 }
