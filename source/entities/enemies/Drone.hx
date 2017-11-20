@@ -29,5 +29,16 @@ class Drone extends Enemy
 		time += elapsed;
 		y = amplitude * Math.cos(frequency * time) + originY;
 		velocity.x = speed;
-	}	
+	}
+	
+	override public function getDamage():Void
+	{
+		Reg.score += Reg.droneScore;
+		super.getDamage();
+	}
+	
+	public function getType():String
+	{
+		return "Drone";
+	}
 }

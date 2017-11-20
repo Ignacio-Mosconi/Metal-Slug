@@ -28,8 +28,8 @@ class Player extends FlxSprite
 	private var speed:Int;
 	private var jumpSpeed:Int;
 	private var knife:Knife;
-	private var pistolBullets:FlxTypedGroup<Bullet>;
-	private var grenades:FlxTypedGroup<Grenade>;
+	public var pistolBullets(get, null):FlxTypedGroup<Bullet>;
+	public var grenades(get, null):FlxTypedGroup<Grenade>;
 	private var hasJustShot:Bool;
 	private var shootingCooldown:Float;
 	private var isAimingUpwards:Bool;
@@ -78,8 +78,6 @@ class Player extends FlxSprite
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
-		
-		trace(currentState);
 		
 		super.update(elapsed);
 	}
@@ -502,8 +500,8 @@ class Player extends FlxSprite
 	{
 		super.kill();
 		
-		lives--;
-		reset(camera.scroll.x + 64, camera.scroll.y + 64);
+		Player.lives--;
+		reset(camera.scroll.x + 64, camera.scroll.y);
 	}
 	
 	override public function reset(X, Y):Void
@@ -512,6 +510,7 @@ class Player extends FlxSprite
 		
 		isInvincible = true;
 		FlxFlicker.flicker(this, 3, 0.25, true, true, endInvincibility);
+		camera.follow(this);
 	}
 	
 	private function endInvincibility(f:FlxFlicker):Void 
@@ -519,9 +518,24 @@ class Player extends FlxSprite
 		isInvincible = false;
 	}
 	
+	public function getType():String
+	{
+		return "Player";
+	}
+	
 	// Getters & Setters
 	function get_isInvincible():Bool 
 	{
 		return isInvincible;
+	}
+	
+	function get_pistolBullets():FlxTypedGroup<Bullet> 
+	{
+		return pistolBullets;
+	}
+	
+	function get_grenades():FlxTypedGroup<Grenade> 
+	{
+		return grenades;
 	}
 }
