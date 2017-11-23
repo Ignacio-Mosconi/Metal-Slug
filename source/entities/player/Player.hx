@@ -24,7 +24,7 @@ enum State
 
 class Player extends Entity
 {
-	static private var lives:Int;
+	static public var lives(get, null):Int;
 	private var currentState:State;
 	private var speed:Int;
 	private var jumpSpeed:Int;
@@ -34,9 +34,9 @@ class Player extends Entity
 	private var hasJustShot:Bool;
 	private var shootingCooldown:Float;
 	private var isAimingUpwards:Bool;
-	private var totalAmmo:Int;
+	public var totalAmmo(get, null):Int;
 	private var magAmmo:Int;
-	private var grenadesAmmo:Int;
+	public var grenadesAmmo(get, null):Int;
 	public var hasJustBeenHit(get, null):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
@@ -45,7 +45,6 @@ class Player extends Entity
 		
 		// Graphics & Animations
 		loadGraphic(AssetPaths.player__png, true, 80, 64, true);
-		pixelPerfectPosition = false;
 		setFacingFlip(FlxObject.LEFT, true, false);
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		animationsSetUp();
@@ -60,7 +59,7 @@ class Player extends Entity
 		hasJustShot = false;
 		shootingCooldown = 0;
 		isAimingUpwards = false;
-		totalAmmo = 50;
+		totalAmmo = 56;
 		magAmmo = 7;
 		grenadesAmmo = 3;
 		hasJustBeenHit = false;
@@ -554,5 +553,20 @@ class Player extends Entity
 	function get_hasJustBeenHit():Bool 
 	{
 		return hasJustBeenHit;
+	}
+	
+	function get_totalAmmo():Int 
+	{
+		return totalAmmo;
+	}
+	
+	static function get_lives():Int 
+	{
+		return lives;
+	}
+	
+	function get_grenadesAmmo():Int 
+	{
+		return grenadesAmmo;
 	}
 }
