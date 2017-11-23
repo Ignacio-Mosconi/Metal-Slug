@@ -1,5 +1,6 @@
 package states;
 
+import entities.Entity;
 import entities.enemies.Drone;
 import entities.enemies.Enemy;
 import entities.player.Bullet;
@@ -17,11 +18,12 @@ import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
-	private var entities:FlxGroup;
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
+	private var entities:FlxGroup;
 	private var enemies:FlxTypedGroup<Enemy>;
+	private var hud:HUD;
 	
 	override public function create():Void
 	{
@@ -38,16 +40,19 @@ class PlayState extends FlxState
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		
-		cameraSetUp();	
+		cameraSetUp();
+		hudSetUp();
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 		
-		FlxG.overlap(entities, tilemap, enityTileMapCollision);
+		FlxG.overlap(entities, tilemap, entityTileMapCollision);
 		FlxG.overlap(player, enemies, playerEnemyCollision);
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
+		
+		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
 	}
 	
 	// Set Up Methods
@@ -83,12 +88,19 @@ class PlayState extends FlxState
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		camera.followLerp = 0.5;
 		camera.targetOffset.set(96, -64);
-		camera.setScrollBounds(0, 3200, 0, 512);
-		camera.pixelPerfectRender = false;		
+		camera.setScrollBounds(0, 3200, 176, 512);
+		camera.bgColor = 0xFF224466;
+		camera.pixelPerfectRender = false;
+	}
+	
+	private function hudSetUp():Void 
+	{
+		hud = new HUD(player);
+		add(hud);
 	}
 	
 	// Collision Methods	
-	private function enityTileMapCollision(e:Dynamic, t:FlxTilemap):Void 
+	private function entityTileMapCollision(e:Dynamic, t:FlxTilemap):Void 
 	{
 		if (e.getType() != "Drone")
 		{
@@ -98,7 +110,7 @@ class PlayState extends FlxState
 	
 	private function playerEnemyCollision(p:Player, e:Enemy):Void 
 	{
-		if (!p.hasJustBeenHit)
+		if (!p.hasJustBeenHit && !e.isGettingDamage)
 		{
 			FlxObject.separate(p, e);
 			camera.shake(0.01, 0.25);
@@ -109,7 +121,10 @@ class PlayState extends FlxState
 	
 	private function bulletEnemyCollision(b:Bullet, e:Enemy):Void
 	{
-		e.getDamage();
-		player.pistolBullets.remove(b);
+		if (!e.isGettingDamage)
+		{
+			e.getDamage();
+			player.pistolBullets.remove(b);
+		}
 	}
 }

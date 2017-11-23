@@ -1,8 +1,8 @@
 package entities.player;
 
+import entities.Entity;
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
@@ -22,7 +22,7 @@ enum State
 	DYING;
 }
 
-class Player extends FlxSprite
+class Player extends Entity
 {
 	static private var lives:Int;
 	private var currentState:State;

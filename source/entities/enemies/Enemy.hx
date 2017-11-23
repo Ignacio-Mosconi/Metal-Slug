@@ -1,20 +1,26 @@
 package entities.enemies;
 
-import flixel.FlxSprite;
+import entities.Entity;
 
-class Enemy extends FlxSprite
+class Enemy extends Entity
 {
 	private var speed:Int;
+	public var isGettingDamage(get, null):Bool;
 	
 	public function new(?X, ?Y) 
 	{
 		super(X, Y);
 		
-		pixelPerfectPosition = false;
+		isGettingDamage = false;
 	}
 	
 	public function getDamage():Void
 	{
-		destroy();
+		isGettingDamage = true;
+	}
+	
+	function get_isGettingDamage():Bool 
+	{
+		return isGettingDamage;
 	}
 }
