@@ -19,6 +19,7 @@ enum State
 	SHOOTING;
 	RELOADING;
 	THROWING_GRENADE;
+	DYING;
 }
 
 class Player extends FlxSprite
@@ -36,7 +37,7 @@ class Player extends FlxSprite
 	private var totalAmmo:Int;
 	private var magAmmo:Int;
 	private var grenadesAmmo:Int;
-	public var isInvincible(get, null):Bool;
+	public var hasJustBeenHit(get, null):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -62,7 +63,7 @@ class Player extends FlxSprite
 		totalAmmo = 50;
 		magAmmo = 7;
 		grenadesAmmo = 3;
-		isInvincible = false;
+		hasJustBeenHit = false;
 		
 		// Weapons Creation
 		knife = new Knife();
@@ -78,6 +79,9 @@ class Player extends FlxSprite
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
+		
+		trace(currentState);
+		trace(hasJustBeenHit);
 		
 		super.update(elapsed);
 	}
@@ -343,6 +347,13 @@ class Player extends FlxSprite
 						}
 					}
 				}
+				
+				case State.DYING:
+					if (animation.name != "die")
+						animation.play("die");
+						
+					if (animation.name == "die" && animation.finished)
+						kill();
 		}
 	}
 	
@@ -494,6 +505,7 @@ class Player extends FlxSprite
 		animation.add("reload", [33, 34, 35, 36, 37, 38, 39], 8, false, false, false);
 		animation.add("throwGrenade", [40, 41, 42], 8, false, false, false);
 		animation.add("crouchThrowGrenade", [43, 44, 45], 8, false, false, false);
+		animation.add("die", [46, 47, 48, 49], 3, false, false, false);
 	}
 	
 	override public function kill():Void
@@ -508,14 +520,19 @@ class Player extends FlxSprite
 	{
 		super.reset(X, Y);
 		
-		isInvincible = true;
 		FlxFlicker.flicker(this, 3, 0.25, true, true, endInvincibility);
-		camera.follow(this);
+		currentState = State.IDLE;
 	}
 	
-	private function endInvincibility(f:FlxFlicker):Void 
+	function endInvincibility(f:FlxFlicker):Void 
 	{
-		isInvincible = false;
+		hasJustBeenHit = false;
+	}
+	
+	public function getHit():Void
+	{
+		hasJustBeenHit = true;
+		currentState = State.DYING;
 	}
 	
 	public function getType():String
@@ -523,12 +540,7 @@ class Player extends FlxSprite
 		return "Player";
 	}
 	
-	// Getters & Setters
-	function get_isInvincible():Bool 
-	{
-		return isInvincible;
-	}
-	
+	// Getters & Setters	
 	function get_pistolBullets():FlxTypedGroup<Bullet> 
 	{
 		return pistolBullets;
@@ -537,5 +549,10 @@ class Player extends FlxSprite
 	function get_grenades():FlxTypedGroup<Grenade> 
 	{
 		return grenades;
+	}
+	
+	function get_hasJustBeenHit():Bool 
+	{
+		return hasJustBeenHit;
 	}
 }

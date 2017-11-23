@@ -7,6 +7,7 @@ import entities.player.Player;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
@@ -47,8 +48,6 @@ class PlayState extends FlxState
 		FlxG.overlap(entities, tilemap, enityTileMapCollision);
 		FlxG.overlap(player, enemies, playerEnemyCollision);
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
-		
-		trace(Reg.score);
 	}
 	
 	// Set Up Methods
@@ -99,12 +98,12 @@ class PlayState extends FlxState
 	
 	private function playerEnemyCollision(p:Player, e:Enemy):Void 
 	{
-		if (!player.isInvincible)
+		if (!p.hasJustBeenHit)
 		{
 			FlxObject.separate(p, e);
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
-			p.kill();
+			p.getHit();
 		}
 	}
 	
