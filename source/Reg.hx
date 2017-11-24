@@ -20,7 +20,9 @@ class Reg
 	static public var gravity:Int = 1400;
 	static public var score:Int = 0;
 	// Enemies
-	static public var droneFlyingSpeed:Int = -100;
 	static public var droneScore:Int = 2;
+	static public var rifleSoldierSpeed:Int = 120;
+	static public var rifleSoldierScore:Int = 10;
+	static public var rifleSoldierWalkDistance:Int = 200;
 	
 }

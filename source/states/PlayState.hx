@@ -2,6 +2,7 @@ package states;
 
 import entities.enemies.Drone;
 import entities.enemies.Enemy;
+import entities.enemies.RifleSoldier;
 import entities.player.weapons.Bullet;
 import entities.player.weapons.ExplosionBox;
 import entities.player.weapons.Grenade;
@@ -88,6 +89,9 @@ class PlayState extends FlxState
 			case "Drone":
 				var drone = new Drone(x, y);
 				enemies.add(drone);
+			case "RifleSoldier":
+				var rifleSoldier = new RifleSoldier(x, y);
+				enemies.add(rifleSoldier);
 		}
 	}
 	

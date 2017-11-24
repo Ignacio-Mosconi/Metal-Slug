@@ -1,6 +1,7 @@
 package entities.enemies;
 
 import entities.Entity;
+import flixel.FlxObject;
 
 class Enemy extends Entity
 {

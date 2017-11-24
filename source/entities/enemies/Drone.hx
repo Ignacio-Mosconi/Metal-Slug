@@ -1,6 +1,6 @@
 package entities.enemies;
 
-enum State
+enum DroneState
 {
 	FLYING;
 	EXPLODING;
@@ -12,7 +12,7 @@ class Drone extends Enemy
 	private var frequency:Float;
 	private var time:Float;
 	private var originY:Float;
-	private var currentState:State;
+	private var currentState:DroneState;
 	
 	public function new(?X, ?Y) 
 	{
@@ -22,26 +22,26 @@ class Drone extends Enemy
 		animation.add("fly", [0, 1, 2], 3, true, false, false);
 		animation.add("explode", [3, 4, 5, 6, 7], 8, false, false, false);
 		
-		speed = Reg.droneFlyingSpeed;
+		speed = Reg.random.int(-120, -80);
 		amplitude = Reg.random.int(32, 64);
 		frequency = Math.PI;
 		time = 0;
 		originY = Y;
-		currentState = State.FLYING;
+		currentState = DroneState.FLYING;
 	}
 	
 	override public function update(elapsed:Float)
 	{
-		super.update(elapsed);
-		
 		stateMachine(elapsed);
+		
+		super.update(elapsed);
 	}
 	
 	private function stateMachine(elapsed:Float):Void 
 	{
 		switch (currentState)
 		{
-			case State.FLYING:
+			case DroneState.FLYING:
 				animation.play("fly");
 				
 				time += elapsed;
@@ -49,9 +49,9 @@ class Drone extends Enemy
 				velocity.x = speed;
 				
 				if (acceleration.y != 0)
-					currentState = State.EXPLODING;
+					currentState = DroneState.EXPLODING;
 				
-			case State.EXPLODING:
+			case DroneState.EXPLODING:
 				animation.play("explode");
 				
 				if (animation.name == "explode" && animation.finished)

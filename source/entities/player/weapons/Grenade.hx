@@ -40,8 +40,6 @@ class Grenade extends Weapon
 	{
 		super.update(elapsed);
 		
-		trace(velocity.x);
-		
 		switch (currentState)
 		{
 			case GrenadeState.FLYING:
@@ -108,13 +106,14 @@ class Grenade extends Weapon
 		}
 	}
 	
+	function get_currentState():GrenadeState 
+	{
+		return currentState;
+	}
+	
 	function get_explosionBox():ExplosionBox 
 	{
 		return explosionBox;
 	}
 	
-	function get_currentState():GrenadeState 
-	{
-		return currentState;
-	}
 }
