@@ -1,6 +1,10 @@
 package entities.player;
 
 import entities.Entity;
+import entities.player.weapons.Bullet;
+import entities.player.weapons.Grenade;
+import entities.player.weapons.Knife;
+import entities.player.weapons.Weapon;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
@@ -78,9 +82,6 @@ class Player extends Entity
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
-		
-		trace(currentState);
-		trace(hasJustBeenHit);
 		
 		super.update(elapsed);
 	}

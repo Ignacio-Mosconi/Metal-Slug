@@ -1,15 +1,16 @@
 package states;
 
-import entities.Entity;
 import entities.enemies.Drone;
 import entities.enemies.Enemy;
-import entities.player.Bullet;
-import entities.player.Knife;
+import entities.player.weapons.Bullet;
+import entities.player.weapons.ExplosionBox;
+import entities.player.weapons.Grenade;
+import entities.player.weapons.Grenade.GrenadeState;
+import entities.player.weapons.Knife;
 import entities.player.Player;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
-import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
@@ -35,14 +36,16 @@ class PlayState extends FlxState
 		
 		entities = new FlxGroup();
 		enemies = new FlxTypedGroup<Enemy>();
-		entities.add(enemies);
-		add(enemies);
 		
-		tilemapSetUp();
+		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		loader.loadEntities(entityCreator, "Entities");
+		tilemapSetUp();
 		
 		cameraSetUp();
 		hudSetUp();
+		
+		entities.add(enemies);
+		add(enemies);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -54,14 +57,16 @@ class PlayState extends FlxState
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
 		FlxG.overlap(player.knife, enemies, knifeEnemyCollision);
 		FlxG.collide(player.grenades, tilemap);
-		
+		for (grenade in player.grenades)
+			if (grenade.currentState == GrenadeState.EXPLODING)
+				FlxG.overlap(grenade.explosionBox, enemies, grenadeEnemyCollision);
+			
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
 	}
 	
 	// Set Up Methods
 	private function tilemapSetUp():Void 
 	{
-		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 32, 32, "Tiles");
 		tilemap.setTileProperties(0, FlxObject.NONE);
 		for (i in 1...4)
@@ -135,5 +140,11 @@ class PlayState extends FlxState
 	{
 		if (!e.isGettingDamage)
 			e.getDamage();
+	}
+	
+	private function grenadeEnemyCollision(eB:ExplosionBox, e:Enemy):Void
+	{
+		if (!e.isGettingDamage)
+			e.getDamage();		
 	}
 }

@@ -1,7 +1,7 @@
-package entities.player;
+package entities.player.weapons;
+
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.effects.particles.FlxEmitter.FlxEmitterMode;
 import flixel.effects.particles.FlxEmitter.FlxTypedEmitter;
 import flixel.effects.particles.FlxParticle;
@@ -14,12 +14,12 @@ enum GrenadeState
 }
 class Grenade extends Weapon 
 {
-	private var currentState:GrenadeState;
+	public var currentState(get, null):GrenadeState;
 	private var speed:Int;
 	private var direction:Int;
 	private var timer:Float;
 	private var explosion:FlxTypedEmitter<FlxParticle>;
-	private var explosionBox:FlxSprite;
+	public var explosionBox(get, null):ExplosionBox;
 	
 	public function new(?X:Float=0, ?Y:Float=0, Direction:Int) 
 	{
@@ -34,11 +34,6 @@ class Grenade extends Weapon
 		direction = Direction;	
 		velocitySetUp();
 		timer = 0;
-		
-		explosionBox = new FlxSprite();
-		explosionBox.makeGraphic(96, 96, 0x0000000, false);
-		explosionBox.kill();
-		FlxG.state.add(explosionBox);
 	}
 	
 	override public function update(elapsed:Float)
@@ -62,7 +57,6 @@ class Grenade extends Weapon
 				}
 					
 			case GrenadeState.EXPLODING:
-				explosionBox.destroy();
 				destroy();
 		}				
 	}
@@ -92,7 +86,8 @@ class Grenade extends Weapon
 		explosion.start(true, 0.1, 0);
 		FlxG.state.add(explosion);
 		
-		explosionBox.reset(x + width / 2 - explosionBox.width / 2, y + height - explosionBox.height);
+		explosionBox = new ExplosionBox(x + width / 2 - 96 / 2, y + height - 96);
+		FlxG.state.add(explosionBox);
 	}
 	
 	private function slowDown():Void 
@@ -111,5 +106,15 @@ class Grenade extends Weapon
 			else
 				velocity.x = 0;
 		}
+	}
+	
+	function get_explosionBox():ExplosionBox 
+	{
+		return explosionBox;
+	}
+	
+	function get_currentState():GrenadeState 
+	{
+		return currentState;
 	}
 }

@@ -1,4 +1,5 @@
-package entities.player;
+package entities.player.weapons;
+import entities.player.weapons.Weapon;
 
 class Knife extends Weapon 
 {

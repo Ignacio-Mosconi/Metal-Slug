@@ -13,5 +13,6 @@
     <Drone id="1" x="704" y="128" />
     <Drone id="2" x="960" y="64" />
     <Player id="0" x="192" y="192" />
+    <Drone id="3" x="960" y="192" />
   </Entities>
 </level>
