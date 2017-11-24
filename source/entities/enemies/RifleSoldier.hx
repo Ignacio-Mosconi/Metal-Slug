@@ -4,7 +4,7 @@ import flixel.FlxObject;
 enum RifleSoldierState
 {
 	WANDERING;
-	//SHOOTING;
+	SHOOTING;
 }
 class RifleSoldier extends Enemy 
 {
@@ -21,8 +21,7 @@ class RifleSoldier extends Enemy
 		currentState = RifleSoldierState.WANDERING;
 		walkOrigin = Std.int(X);
 		distanceWalked = 0;
-		velocity.x = speed;
-		
+		velocity.x = speed;		
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -38,6 +37,8 @@ class RifleSoldier extends Enemy
 		{
 			case RifleSoldierState.WANDERING:
 				moveAround();
+				
+			case RifleSoldierState.
 		}
 	}
 	

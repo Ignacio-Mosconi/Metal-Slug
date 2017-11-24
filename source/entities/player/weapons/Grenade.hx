@@ -6,6 +6,7 @@ import flixel.effects.particles.FlxEmitter.FlxEmitterMode;
 import flixel.effects.particles.FlxEmitter.FlxTypedEmitter;
 import flixel.effects.particles.FlxParticle;
 import flixel.util.FlxColor;
+import flixel.util.helpers.FlxRangeBounds;
 
 enum GrenadeState
 {
@@ -81,7 +82,9 @@ class Grenade extends Weapon
 		explosion.launchMode = FlxEmitterMode.CIRCLE;
 		explosion.makeParticles(3, 3, FlxColor.YELLOW, 100);
 		explosion.makeParticles(3, 3, FlxColor.RED, 100);
-		explosion.start(true, 0.1, 0);
+		explosion.speed.set(200, 400, 500, 700);
+		explosion.start(true, 0, 0);
+		explosion.lifespan.set(0.25, 0.75);
 		FlxG.state.add(explosion);
 		
 		explosionBox = new ExplosionBox(x + width / 2 - 96 / 2, y + height - 96);
