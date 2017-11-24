@@ -60,7 +60,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	
 	private function livesSetUp():Void 
 	{
-		lives = new FlxText(48, 8, 0, "3", 11, true);
+		lives = new FlxText(48, 8, 0, "3", 12, true);
 		lives.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		lives.scrollFactor.set(0, 0);
 		add(lives);
@@ -72,7 +72,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	
 	private function totalAmmoSetUp():Void 
 	{
-		totalAmmo = new FlxText(FlxG.width / 2 - 50, 8, 0, "56", 11, true);
+		totalAmmo = new FlxText(FlxG.width / 2 - 50, 8, 0, "56", 12, true);
 		totalAmmo.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		totalAmmo.scrollFactor.set(0, 0);
 		add(totalAmmo);
@@ -85,7 +85,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	
 	private function grenadesSetUp():Void 
 	{
-		grenades = new FlxText(112, 8, 0, "3", 11, true);
+		grenades = new FlxText(112, 8, 0, "3", 12, true);
 		grenades.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		grenades.scrollFactor.set(0, 0);
 		add(grenades);
@@ -98,7 +98,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	
 	private function scoreSetUp():Void 
 	{
-		score = new FlxText(FlxG.width - 128, 8, 0, "Score: 0", 11, true);
+		score = new FlxText(FlxG.width - 128, 8, 0, "Score: 0", 12, true);
 		score.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
 		score.scrollFactor.set(0, 0);
 		add(score);
@@ -107,7 +107,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	private function playerMagBarSetUp(player:Player):Void
 	{
 		playerMagBar = new FlxBar(FlxG.width / 2 - 18, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 100, 12, player, "magAmmo", 0, 7, true);
-		playerMagBar.createFilledBar(FlxColor.RED, FlxColor.YELLOW, true, FlxColor.BLACK);
+		playerMagBar.createFilledBar(0xFF882222, 0xFFDBC21E, true, FlxColor.BLACK);
 		playerMagBar.scrollFactor.set(0, 0);
 		add(playerMagBar);
 	}

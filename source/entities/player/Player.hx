@@ -28,7 +28,7 @@ class Player extends Entity
 	private var currentState:State;
 	private var speed:Int;
 	private var jumpSpeed:Int;
-	private var knife:Knife;
+	public var knife(get, null):Knife;
 	public var pistolBullets(get, null):FlxTypedGroup<Bullet>;
 	public var grenades(get, null):FlxTypedGroup<Grenade>;
 	private var hasJustShot:Bool;
@@ -350,6 +350,8 @@ class Player extends Entity
 				case State.DYING:
 					if (animation.name != "die")
 						animation.play("die");
+
+					velocity.x = 0;	
 						
 					if (animation.name == "die" && animation.finished)
 						kill();
@@ -384,6 +386,7 @@ class Player extends Entity
 	{
 		if (FlxG.keys.pressed.DOWN)
 		{
+			velocity.x = 0;
 			y += 16;
 			height = Reg.playerCrouchedHeight;
 			offset.y = 16;
@@ -568,5 +571,10 @@ class Player extends Entity
 	function get_grenadesAmmo():Int 
 	{
 		return grenadesAmmo;
+	}
+	
+	function get_knife():Knife 
+	{
+		return knife;
 	}
 }

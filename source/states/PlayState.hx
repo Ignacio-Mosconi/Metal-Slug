@@ -4,6 +4,7 @@ import entities.Entity;
 import entities.enemies.Drone;
 import entities.enemies.Enemy;
 import entities.player.Bullet;
+import entities.player.Knife;
 import entities.player.Player;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
@@ -29,7 +30,7 @@ class PlayState extends FlxState
 	{
 		super.create();
 		
-		FlxG.worldBounds.set(0, 0, 3200, 512);
+		FlxG.worldBounds.set(0, 0, 3200, 320);
 		FlxG.mouse.visible = false;
 		
 		entities = new FlxGroup();
@@ -51,6 +52,8 @@ class PlayState extends FlxState
 		FlxG.overlap(entities, tilemap, entityTileMapCollision);
 		FlxG.overlap(player, enemies, playerEnemyCollision);
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
+		FlxG.overlap(player.knife, enemies, knifeEnemyCollision);
+		FlxG.collide(player.grenades, tilemap);
 		
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
 	}
@@ -88,7 +91,7 @@ class PlayState extends FlxState
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		camera.followLerp = 0.5;
 		camera.targetOffset.set(96, -64);
-		camera.setScrollBounds(0, 3200, 176, 512);
+		camera.setScrollBounds(0, 3200, 0, 320);
 		camera.bgColor = 0xFF224466;
 		camera.pixelPerfectRender = false;
 	}
@@ -126,5 +129,11 @@ class PlayState extends FlxState
 			e.getDamage();
 			player.pistolBullets.remove(b);
 		}
+	}
+	
+	private function knifeEnemyCollision(k:Knife, e:Enemy):Void
+	{
+		if (!e.isGettingDamage)
+			e.getDamage();
 	}
 }

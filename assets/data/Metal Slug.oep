@@ -6,15 +6,15 @@
   <GridColor A="255" R="255" G="240" B="90" />
   <LevelDefaultSize>
     <Width>6400</Width>
-    <Height>480</Height>
+    <Height>320</Height>
   </LevelDefaultSize>
   <LevelMinimumSize>
     <Width>640</Width>
-    <Height>480</Height>
+    <Height>320</Height>
   </LevelMinimumSize>
   <LevelMaximumSize>
     <Width>12800</Width>
-    <Height>480</Height>
+    <Height>320</Height>
   </LevelMaximumSize>
   <Filename>C:\Users\nacho\Documents\HaxeDevelop Projects\Metal-Slug\assets\data\Metal Slug.oep</Filename>
   <AngleMode>Radians</AngleMode>
