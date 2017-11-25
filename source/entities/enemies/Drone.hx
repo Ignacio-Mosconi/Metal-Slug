@@ -55,7 +55,7 @@ class Drone extends Enemy
 				animation.play("explode");
 				
 				if (animation.name == "explode" && animation.finished)
-					destroy();
+					kill();
 		}
 	}
 	

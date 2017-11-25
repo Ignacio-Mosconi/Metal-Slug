@@ -26,6 +26,11 @@ class Enemy extends Entity
 		followingTarget = target;
 	}
 	
+	public function accessWeapon():Dynamic
+	{
+		return "noWeapon";
+	}
+	
 	function get_isGettingDamage():Bool 
 	{
 		return isGettingDamage;

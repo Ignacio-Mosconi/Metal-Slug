@@ -16,7 +16,7 @@
     <Width>12800</Width>
     <Height>320</Height>
   </LevelMaximumSize>
-  <Filename>D:\Práctica Profesional I - Desarrollo de Videojuegos I\HaxeDevelop Projects\Metal-Slug\assets\data\Metal Slug.oep</Filename>
+  <Filename>C:\Users\nacho\Documents\HaxeDevelop Projects\Metal-Slug\assets\data\Metal Slug.oep</Filename>
   <AngleMode>Radians</AngleMode>
   <CameraEnabled>false</CameraEnabled>
   <CameraSize>
@@ -103,7 +103,7 @@
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\images\rifleSoldier.png" Tiled="true">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions />

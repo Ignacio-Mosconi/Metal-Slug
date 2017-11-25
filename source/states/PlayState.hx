@@ -55,6 +55,8 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		
+		garbageCollector();
+		
 		FlxG.overlap(entities, tilemap, entityTileMapCollision);
 		FlxG.overlap(player, enemies, playerEnemyCollision);
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
@@ -63,6 +65,10 @@ class PlayState extends FlxState
 		for (grenade in player.grenades)
 			if (grenade.currentState == GrenadeState.EXPLODING)
 				FlxG.overlap(grenade.explosionBox, enemies, grenadeEnemyCollision);
+		for (enemy in enemies)
+			if (enemy.getType() == "RifleSoldier")
+				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
+				
 			
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
 	}
@@ -158,6 +164,25 @@ class PlayState extends FlxState
 	private function grenadeEnemyCollision(eB:ExplosionBox, e:Enemy):Void
 	{
 		if (!e.isGettingDamage)
-			e.getDamage();		
+			e.getDamage();
+	}
+	
+	private function enemyBulletPlayerCollision(b:Bullet, p:Player):Void 
+	{
+		if (!p.hasJustBeenHit)
+		{
+			camera.shake(0.01, 0.25);
+			camera.flash(FlxColor.RED, 0.25);
+			p.getHit();
+			enemies.accesWeapon(
+		}
+	}
+	
+	// Other Methods
+	private function garbageCollector():Void
+	{
+		for (enemy in enemies)
+			if (!enemy.alive)
+				enemies.remove(enemy, true);
 	}
 }
