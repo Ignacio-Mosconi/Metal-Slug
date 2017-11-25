@@ -1,7 +1,6 @@
 package entities;
 
 import flixel.FlxSprite;
-import flixel.system.FlxAssets.FlxGraphicAsset;
 
 class Entity extends FlxSprite 
 {
@@ -11,6 +10,11 @@ class Entity extends FlxSprite
 		super(X, Y);
 		
 		pixelPerfectPosition = false;
+	}
+	
+	public function getType():String
+	{
+		return "Enitity";
 	}
 	
 }

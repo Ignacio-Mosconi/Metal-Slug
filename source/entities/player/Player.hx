@@ -538,11 +538,6 @@ class Player extends Entity
 		currentState = State.DYING;
 	}
 	
-	public function getType():String
-	{
-		return "Player";
-	}
-	
 	// Getters & Setters	
 	function get_pistolBullets():FlxTypedGroup<Bullet> 
 	{

@@ -80,8 +80,8 @@ class Grenade extends Weapon
 		explosion = new FlxTypedEmitter<FlxParticle>();
 		explosion.focusOn(this);
 		explosion.launchMode = FlxEmitterMode.CIRCLE;
-		explosion.makeParticles(3, 3, FlxColor.YELLOW, 100);
-		explosion.makeParticles(3, 3, FlxColor.RED, 100);
+		explosion.makeParticles(1, 1, 0xFFEFD10B, 100);
+		explosion.makeParticles(1, 1, 0xFFFE3344, 100);
 		explosion.speed.set(200, 400, 500, 700);
 		explosion.start(true, 0, 0);
 		explosion.lifespan.set(0.25, 0.75);

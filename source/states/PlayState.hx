@@ -47,6 +47,8 @@ class PlayState extends FlxState
 		
 		entities.add(enemies);
 		add(enemies);
+		
+		enemiesFollowingTargetSetUp();
 	}
 
 	override public function update(elapsed:Float):Void
@@ -109,6 +111,13 @@ class PlayState extends FlxState
 	{
 		hud = new HUD(player);
 		add(hud);
+	}
+	
+	private function enemiesFollowingTargetSetUp():Void 
+	{
+		for (enemy in enemies)
+			if (enemy.getType() != "Drone")
+				enemy.setFollowingTarget(player);
 	}
 	
 	// Collision Methods	

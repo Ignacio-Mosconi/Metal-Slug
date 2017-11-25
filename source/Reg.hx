@@ -24,5 +24,8 @@ class Reg
 	static public var rifleSoldierSpeed:Int = 120;
 	static public var rifleSoldierScore:Int = 10;
 	static public var rifleSoldierWalkDistance:Int = 200;
+	static public var rifleSoldierTrackDistance:Int = 300;
+	static public var rifleSoldierJumpSpeed:Int = -100;
+	static public var rifleSoldierBackOffTime:Float = 1;
 	
 }

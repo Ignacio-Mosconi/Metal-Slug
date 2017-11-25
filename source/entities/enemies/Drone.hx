@@ -19,7 +19,7 @@ class Drone extends Enemy
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.drone__png, true, 32, 32, false);
-		animation.add("fly", [0, 1, 2], 3, true, false, false);
+		animation.add("fly", [0, 1, 2], 12, true, false, false);
 		animation.add("explode", [3, 4, 5, 6, 7], 8, false, false, false);
 		
 		speed = Reg.random.int(-120, -80);
@@ -67,7 +67,7 @@ class Drone extends Enemy
 		Reg.score += Reg.droneScore;
 	}
 	
-	public function getType():String
+	override public function getType():String
 	{
 		return "Drone";
 	}
