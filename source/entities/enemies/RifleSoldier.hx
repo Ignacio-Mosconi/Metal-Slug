@@ -23,9 +23,10 @@ class RifleSoldier extends Enemy
 	{
 		super(X, Y);
 		
-		makeGraphic(64, 64, 0xFFFFFFFF);
+		loadGraphic(AssetPaths.rifleSoldier__png, true, 80, 64, false);
 		setFacingFlip(FlxObject.LEFT, false, false);
 		setFacingFlip(FlxObject.RIGHT, true, false);
+		animation.add("move", [1, 2, 3, 4, 5, 6, 7, 8], 12, true, false, false);
 		speed = Reg.rifleSoldierSpeed;
 		currentState = RifleSoldierState.WANDERING;
 		walkOrigin = Std.int(X);
@@ -42,6 +43,8 @@ class RifleSoldier extends Enemy
 	{
 		stateMachine(elapsed);
 		
+		trace(currentState);
+		
 		super.update(elapsed);		
 	}
 	
@@ -50,6 +53,8 @@ class RifleSoldier extends Enemy
 		switch (currentState)
 		{
 			case RifleSoldierState.WANDERING:
+				animation.play("move");
+				
 				moveAround();
 				
 				if (trackedPlayer())
@@ -69,9 +74,11 @@ class RifleSoldier extends Enemy
 			case RifleSoldierState.SHOOTING:
 				
 				velocity.x = (x > followingTarget.x) ? speed: -speed;
+				facing = (x > followingTarget.x) ? FlxObject.RIGHT: FlxObject.LEFT;
 				currentState = RifleSoldierState.BACKING_OFF;
 				
 			case RifleSoldierState.BACKING_OFF:
+				animation.play("move");
 				
 				backingOffTime += elapsed;
 				if (backingOffTime >= Reg.rifleSoldierBackOffTime)
@@ -80,6 +87,7 @@ class RifleSoldier extends Enemy
 					if (trackedPlayer())
 					{
 						velocity.x = 0;
+						facing = (followingTarget.x < x) ? FlxObject.LEFT: FlxObject.RIGHT;
 						shoot();
 						currentState = RifleSoldierState.SHOOTING;
 					}
@@ -100,6 +108,7 @@ class RifleSoldier extends Enemy
 		{
 			distanceWalked = 0;
 			walkOrigin = Std.int(x);
+			facing = (velocity.x < 0) ? FlxObject.RIGHT: FlxObject.LEFT;
 			velocity.x = (velocity.x < 0) ? speed: -speed;
 		}
 	}
@@ -116,13 +125,13 @@ class RifleSoldier extends Enemy
 		if (facing == FlxObject.LEFT)
 		{
 			var bullet = new Bullet(x - 4, y + 10, facing);
-			bullet.velocity.y = 1;
+			bullet.velocity.y = Reg.random.float( -15, -5);
 			rifleBullets.add(bullet);
 		}
 		else
 		{
 			var bullet = new Bullet(x + width, y + 10, facing);
-			bullet.velocity.y = 1;
+			bullet.velocity.y = Reg.random.float( -15, -5);
 			rifleBullets.add(bullet);
 		}
 	}
