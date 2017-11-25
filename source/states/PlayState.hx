@@ -17,6 +17,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 import flixel.FlxObject;
 import flixel.FlxG;
+import flixel.util.FlxCollision;
 import flixel.util.FlxColor;
 
 class PlayState extends FlxState
@@ -24,6 +25,7 @@ class PlayState extends FlxState
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
+	private var cameraWall:CameraWall;
 	private var entities:FlxGroup;
 	private var enemies:FlxTypedGroup<Enemy>;
 	private var hud:HUD;
@@ -57,6 +59,10 @@ class PlayState extends FlxState
 		
 		garbageCollector();
 		
+		if (camera.scroll.x < 3200 - (camera.scroll.x + 2 * FlxG.width))
+			camera.setScrollBoundsRect(camera.scroll.x, 0, 3200, 320, false);
+		
+		FlxG.collide(player, cameraWall);
 		FlxG.overlap(entities, tilemap, entityTileMapCollision);
 		FlxG.overlap(player, enemies, playerEnemyCollision);
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
@@ -69,7 +75,6 @@ class PlayState extends FlxState
 			if (enemy.getType() == "RifleSoldier")
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
 				
-			
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
 	}
 	
@@ -111,6 +116,8 @@ class PlayState extends FlxState
 		camera.setScrollBounds(0, 3200, 0, 320);
 		camera.bgColor = 0xFF224466;
 		camera.pixelPerfectRender = false;
+		cameraWall = new CameraWall();
+		add(cameraWall);
 	}
 	
 	private function hudSetUp():Void 
@@ -174,7 +181,6 @@ class PlayState extends FlxState
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
 			p.getHit();
-			enemies.accesWeapon(
 		}
 	}
 	
@@ -183,6 +189,9 @@ class PlayState extends FlxState
 	{
 		for (enemy in enemies)
 			if (!enemy.alive)
+			{
+				enemy.destroy();
 				enemies.remove(enemy, true);
+			}
 	}
 }

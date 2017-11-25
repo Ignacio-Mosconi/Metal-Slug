@@ -13,6 +13,7 @@ class Drone extends Enemy
 	private var time:Float;
 	private var originY:Float;
 	private var currentState:DroneState;
+	private var hasAppeared:Bool;
 	
 	public function new(?X, ?Y) 
 	{
@@ -28,11 +29,20 @@ class Drone extends Enemy
 		time = 0;
 		originY = Y;
 		currentState = DroneState.FLYING;
+		hasAppeared = false;
 	}
 	
 	override public function update(elapsed:Float)
 	{
-		stateMachine(elapsed);
+		if (isOnScreen())
+			hasAppeared = true;
+			
+		if (hasAppeared)
+		{
+			stateMachine(elapsed);
+			if (!isOnScreen())
+				kill();
+		}
 		
 		super.update(elapsed);
 	}
