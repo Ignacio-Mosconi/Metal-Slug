@@ -25,7 +25,7 @@ class PlayState extends FlxState
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
-	private var cameraWall:CameraWall;
+	private var cameraWalls:FlxTypedGroup<CameraWall>;
 	private var entities:FlxGroup;
 	private var enemies:FlxTypedGroup<Enemy>;
 	private var hud:HUD;
@@ -41,8 +41,8 @@ class PlayState extends FlxState
 		enemies = new FlxTypedGroup<Enemy>();
 		
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
-		loader.loadEntities(entityCreator, "Entities");
 		tilemapSetUp();
+		loader.loadEntities(entityCreator, "Entities");
 		
 		cameraSetUp();
 		hudSetUp();
@@ -59,10 +59,9 @@ class PlayState extends FlxState
 		
 		garbageCollector();
 		
-		if (camera.scroll.x < 3200 - (camera.scroll.x + 2 * FlxG.width))
-			camera.setScrollBoundsRect(camera.scroll.x, 0, 3200, 320, false);
+		cameraHandling();
 		
-		FlxG.collide(player, cameraWall);
+		FlxG.collide(player, cameraWalls);
 		FlxG.overlap(entities, tilemap, entityTileMapCollision);
 		FlxG.overlap(player, enemies, playerEnemyCollision);
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
@@ -85,6 +84,12 @@ class PlayState extends FlxState
 		tilemap.setTileProperties(0, FlxObject.NONE);
 		for (i in 1...4)
 			tilemap.setTileProperties(i, FlxObject.ANY);
+		for (i in 4...19)
+			tilemap.setTileProperties(i, FlxObject.NONE);
+		for (i in 19...22)
+			tilemap.setTileProperties(i, FlxObject.UP);
+		for (i in 22...26)
+			tilemap.setTileProperties(i, FlxObject.NONE);
 		add(tilemap);
 	}
 	
@@ -116,8 +121,12 @@ class PlayState extends FlxState
 		camera.setScrollBounds(0, 3200, 0, 320);
 		camera.bgColor = 0xFF224466;
 		camera.pixelPerfectRender = false;
-		cameraWall = new CameraWall();
-		add(cameraWall);
+		cameraWalls = new FlxTypedGroup<CameraWall>();
+		var leftWall = new CameraWall(0, 0, FlxObject.LEFT);
+		var rightWall = new CameraWall(0, 0, FlxObject.RIGHT);
+		cameraWalls.add(leftWall);
+		cameraWalls.add(rightWall);
+		add(cameraWalls);
 	}
 	
 	private function hudSetUp():Void 
@@ -193,5 +202,10 @@ class PlayState extends FlxState
 				enemy.destroy();
 				enemies.remove(enemy, true);
 			}
+	}
+	
+	private function cameraHandling():Void 
+	{
+		camera.setScrollBoundsRect(camera.scroll.x, 0, camera.scroll.x + 2 * FlxG.width, 320, false);
 	}
 }
