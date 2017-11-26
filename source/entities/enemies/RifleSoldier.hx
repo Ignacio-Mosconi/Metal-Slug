@@ -51,7 +51,6 @@ class RifleSoldier extends Enemy
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
-		trace(currentState);
 		
 		super.update(elapsed);		
 	}

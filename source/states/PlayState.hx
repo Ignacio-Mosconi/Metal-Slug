@@ -34,15 +34,15 @@ class PlayState extends FlxState
 	{
 		super.create();
 		
-		FlxG.worldBounds.set(0, 0, 3200, 320);
-		FlxG.mouse.visible = false;
-		
 		entities = new FlxGroup();
 		enemies = new FlxTypedGroup<Enemy>();
 		
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
+		
+		FlxG.worldBounds.set(0, 0, loader.width, loader.height);
+		FlxG.mouse.visible = false;
 		
 		cameraSetUp();
 		hudSetUp();
@@ -75,6 +75,12 @@ class PlayState extends FlxState
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
 				
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
+		
+		if (player.hasLost)
+		{
+			hud.visible = false;
+			openSubState(new DeathState());
+		}
 	}
 	
 	// Set Up Methods
@@ -118,7 +124,7 @@ class PlayState extends FlxState
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		camera.followLerp = 0.5;
 		camera.targetOffset.set(96, -64);
-		camera.setScrollBounds(0, 3200, 0, 320);
+		camera.setScrollBounds(0, loader.width, 0, loader.height);
 		camera.bgColor = 0xFF224466;
 		camera.pixelPerfectRender = false;
 		cameraWalls = new FlxTypedGroup<CameraWall>();
@@ -206,6 +212,9 @@ class PlayState extends FlxState
 	
 	private function cameraHandling():Void 
 	{
-		camera.setScrollBoundsRect(camera.scroll.x, 0, camera.scroll.x + 2 * FlxG.width, 320, false);
+		if (camera.scroll.x < loader.width - FlxG.width)
+			camera.setScrollBoundsRect(camera.scroll.x, 0, loader.width, loader.height, false);
+		else
+			camera.setScrollBoundsRect(loader.width - FlxG.width, 0, loader.width, loader.height);
 	}
 }

@@ -42,6 +42,7 @@ class Player extends Entity
 	private var magAmmo:Int;
 	public var grenadesAmmo(get, null):Int;
 	public var hasJustBeenHit(get, null):Bool;
+	public var hasLost(get, null):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -67,6 +68,7 @@ class Player extends Entity
 		magAmmo = 7;
 		grenadesAmmo = 3;
 		hasJustBeenHit = false;
+		hasLost = false;
 		
 		// Weapons Creation
 		knife = new Knife();
@@ -82,6 +84,7 @@ class Player extends Entity
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
+		trace(x);
 		
 		super.update(elapsed);
 	}
@@ -516,7 +519,10 @@ class Player extends Entity
 		super.kill();
 		
 		Player.lives--;
-		reset(camera.scroll.x + 64, camera.scroll.y);
+		if (Player.lives > 0)
+			reset(camera.scroll.x + 96, camera.scroll.y);
+		else
+			hasLost = true;
 	}
 	
 	override public function reset(X, Y):Void
@@ -536,6 +542,11 @@ class Player extends Entity
 	{
 		hasJustBeenHit = true;
 		currentState = State.DYING;
+	}
+	
+	static public function setLives(Lives):Void
+	{
+		Player.lives = Lives;
 	}
 	
 	// Getters & Setters	
@@ -572,5 +583,10 @@ class Player extends Entity
 	function get_knife():Knife 
 	{
 		return knife;
+	}
+	
+	function get_hasLost():Bool 
+	{
+		return hasLost;
 	}
 }
