@@ -20,7 +20,7 @@ class MenuState extends FlxState
 		FlxG.camera.fade(FlxColor.BLACK, 0.5, true);
 
 		super.create();
-
+		
 		//background = new FlxBackdrop(AssetPaths.backdrop__png, 1, 1, true, true);
 		//add(background);
 
@@ -47,6 +47,7 @@ class MenuState extends FlxState
 
 	private function clickPlay():Void
 	{
+		FlxG.mouse.visible = false;
 		FlxG.camera.fade(FlxColor.BLACK, 0.5, false, function()
 		{
 			FlxG.switchState(new PlayState());

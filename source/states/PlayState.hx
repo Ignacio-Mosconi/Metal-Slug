@@ -79,9 +79,13 @@ class PlayState extends FlxState
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
 		
 		// HUD Info
+		if (!hud.visible)
+			hud.visible = true;
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
 		
 		// Substates Checking
+		checkPauseCondition();
+		
 		checkLoseCondition();
 	}
 	
@@ -125,7 +129,6 @@ class PlayState extends FlxState
 	{
 		camera.fade(FlxColor.BLACK, 0.5, true, false);
 		FlxG.worldBounds.set(0, 0, loader.width, loader.height);
-		FlxG.mouse.visible = false;
 	}
 	
 	private function cameraSetUp():Void 
@@ -228,6 +231,15 @@ class PlayState extends FlxState
 	}
 	
 	// Substates Methods
+	private function checkPauseCondition():Void 
+	{
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			hud.visible = false;
+			openSubState(new PauseState());
+		}
+	}
+	
 	private function checkLoseCondition():Void 
 	{
 		if (player.hasLost)
@@ -236,4 +248,5 @@ class PlayState extends FlxState
 			openSubState(new DeathState());
 		}
 	}
+	
 }
