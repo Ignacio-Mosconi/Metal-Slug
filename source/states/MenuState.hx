@@ -30,12 +30,12 @@ class MenuState extends FlxState
 		add(title);
 
 		playButton = new FlxButton(0, 0, "Play", clickPlay);
-		playButton.scale.set(3/2, 3/2);
+		playButton.scale.set(3 / 2, 3 / 2);
 		playButton.screenCenter();
 		add(playButton);
 
 		exitButton = new FlxButton(0, FlxG.height * 3 / 5, "Exit", clickExit);
-		exitButton.scale.set(4/3, 4/3);
+		exitButton.scale.set(4 / 3, 4 / 3);
 		exitButton.screenCenter(X);
 		add(exitButton);
 	}

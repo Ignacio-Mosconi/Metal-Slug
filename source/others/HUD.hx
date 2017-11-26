@@ -1,4 +1,4 @@
-package;
+package others;
 
 import entities.player.Player;
 import flixel.FlxG;

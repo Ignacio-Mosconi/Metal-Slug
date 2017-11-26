@@ -1,5 +1,5 @@
 package entities.enemies;
-import entities.player.weapons.Bullet;
+import entities.weapons.Bullet;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
@@ -113,10 +113,7 @@ class RifleSoldier extends Enemy
 					animation.play("die");
 					
 				if (animation.name == "die" && animation.finished && !FlxFlicker.isFlickering(this))
-				{
-					velocity.x = 0;
 					FlxFlicker.flicker(this, 1, 0.05, true, true, endDeath, null);
-				}
 		}
 	}
 	
@@ -184,6 +181,7 @@ class RifleSoldier extends Enemy
 	{
 		super.getDamage();
 		
+		velocity.x = 0;
 		currentState =  RifleSoldierState.DYING;
 		Reg.score += Reg.rifleSoldierScore;
 	}

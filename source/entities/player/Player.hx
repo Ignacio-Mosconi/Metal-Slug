@@ -1,10 +1,10 @@
 package entities.player;
 
 import entities.Entity;
-import entities.player.weapons.Bullet;
-import entities.player.weapons.Grenade;
-import entities.player.weapons.Knife;
-import entities.player.weapons.Weapon;
+import entities.weapons.Bullet;
+import entities.weapons.Grenade;
+import entities.weapons.Knife;
+import entities.weapons.Weapon;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
@@ -36,6 +36,7 @@ class Player extends Entity
 	public var pistolBullets(get, null):FlxTypedGroup<Bullet>;
 	public var grenades(get, null):FlxTypedGroup<Grenade>;
 	private var hasJustShot:Bool;
+	private var hasJustThrownGrenade:Bool;
 	private var shootingCooldown:Float;
 	private var isAimingUpwards:Bool;
 	public var totalAmmo(get, null):Int;
@@ -123,7 +124,7 @@ class Player extends Entity
 				shoot(elapsed);
 				throwGrenade();
 
-				if (velocity.x == 0)
+				if (velocity.x == 0 && !hasJustThrownGrenade)
 					currentState = State.IDLE;
 				else
 				{
@@ -335,6 +336,8 @@ class Player extends Entity
 						var grenade = new Grenade(x + width, y, facing);
 						grenades.add(grenade);
 					}
+					hasJustThrownGrenade = false;
+					
 					if (velocity.y != 0)
 						currentState = State.JUMPING;
 					else
@@ -479,6 +482,7 @@ class Player extends Entity
 		if (FlxG.keys.justPressed.E && grenadesAmmo > 0)
 		{
 			currentState = State.THROWING_GRENADE;
+			hasJustThrownGrenade = true;
 			Weapon.directionToFace = facing;
 			grenadesAmmo--;
 		}

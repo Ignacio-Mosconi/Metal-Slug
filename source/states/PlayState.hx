@@ -1,13 +1,15 @@
 package states;
 
+import others.CameraWall;
+import others.HUD;
 import entities.enemies.Drone;
 import entities.enemies.Enemy;
 import entities.enemies.RifleSoldier;
-import entities.player.weapons.Bullet;
-import entities.player.weapons.ExplosionBox;
-import entities.player.weapons.Grenade;
-import entities.player.weapons.Grenade.GrenadeState;
-import entities.player.weapons.Knife;
+import entities.weapons.Bullet;
+import entities.weapons.ExplosionBox;
+import entities.weapons.Grenade;
+import entities.weapons.Grenade.GrenadeState;
+import entities.weapons.Knife;
 import entities.player.Player;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxState;
@@ -25,31 +27,32 @@ class PlayState extends FlxState
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
-	private var cameraWalls:FlxTypedGroup<CameraWall>;
+	private var cameraWalls:FlxTypedGroup<others.CameraWall>;
 	private var entities:FlxGroup;
 	private var enemies:FlxTypedGroup<Enemy>;
-	private var hud:HUD;
+	private var hud:others.HUD;
 	
 	override public function create():Void
 	{
 		super.create();
 		
+		// Attributes Initialization
 		entities = new FlxGroup();
 		enemies = new FlxTypedGroup<Enemy>();
 		
+		// Tilemap & Enitities
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
 		
-		FlxG.worldBounds.set(0, 0, loader.width, loader.height);
-		FlxG.mouse.visible = false;
-		
+		// Game Set Up
+		initialSetUp();
 		cameraSetUp();
 		hudSetUp();
 		
+		// Enemies
 		entities.add(enemies);
 		add(enemies);
-		
 		enemiesFollowingTargetSetUp();
 	}
 
@@ -57,10 +60,11 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		
+		// Miscellaneus
 		garbageCollector();
-		
 		cameraHandling();
 		
+		// Collisions
 		FlxG.collide(player, cameraWalls);
 		FlxG.overlap(entities, tilemap, entityTileMapCollision);
 		FlxG.overlap(player, enemies, playerEnemyCollision);
@@ -73,14 +77,12 @@ class PlayState extends FlxState
 		for (enemy in enemies)
 			if (enemy.getType() == "RifleSoldier")
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
-				
+		
+		// HUD Info
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
 		
-		if (player.hasLost)
-		{
-			hud.visible = false;
-			openSubState(new DeathState());
-		}
+		// Substates Checking
+		checkLoseCondition();
 	}
 	
 	// Set Up Methods
@@ -119,6 +121,13 @@ class PlayState extends FlxState
 		}
 	}
 	
+	private function initialSetUp():Void 
+	{
+		camera.fade(FlxColor.BLACK, 0.5, true, false);
+		FlxG.worldBounds.set(0, 0, loader.width, loader.height);
+		FlxG.mouse.visible = false;
+	}
+	
 	private function cameraSetUp():Void 
 	{
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
@@ -127,9 +136,9 @@ class PlayState extends FlxState
 		camera.setScrollBounds(0, loader.width, 0, loader.height);
 		camera.bgColor = 0xFF224466;
 		camera.pixelPerfectRender = false;
-		cameraWalls = new FlxTypedGroup<CameraWall>();
-		var leftWall = new CameraWall(0, 0, FlxObject.LEFT);
-		var rightWall = new CameraWall(0, 0, FlxObject.RIGHT);
+		cameraWalls = new FlxTypedGroup<others.CameraWall>();
+		var leftWall = new others.CameraWall(0, 0, FlxObject.LEFT);
+		var rightWall = new others.CameraWall(0, 0, FlxObject.RIGHT);
 		cameraWalls.add(leftWall);
 		cameraWalls.add(rightWall);
 		add(cameraWalls);
@@ -137,7 +146,7 @@ class PlayState extends FlxState
 	
 	private function hudSetUp():Void 
 	{
-		hud = new HUD(player);
+		hud = new others.HUD(player);
 		add(hud);
 	}
 	
@@ -216,5 +225,15 @@ class PlayState extends FlxState
 			camera.setScrollBoundsRect(camera.scroll.x, 0, loader.width, loader.height, false);
 		else
 			camera.setScrollBoundsRect(loader.width - FlxG.width, 0, loader.width, loader.height);
+	}
+	
+	// Substates Methods
+	private function checkLoseCondition():Void 
+	{
+		if (player.hasLost)
+		{
+			hud.visible = false;
+			openSubState(new DeathState());
+		}
 	}
 }

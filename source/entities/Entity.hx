@@ -16,5 +16,4 @@ class Entity extends FlxSprite
 	{
 		return "Enitity";
 	}
-	
 }
