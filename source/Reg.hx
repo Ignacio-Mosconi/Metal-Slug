@@ -13,8 +13,10 @@ class Reg
 	static public var pistolBulletSpeed:Int = 440;
 	static public var pistolRateOfFire:Float = 0.1;
 	static public var pistolMagSize:Int = 7;
+	static public var pistolMaxAmmo:Int = 56;
 	static public var grenadeSpeed:Int = 300;
 	static public var grenadeTimer:Float = 1.5;
+	static public var maxGrenades:Int = 3;
 	// Game
 	static public var random:FlxRandom = new FlxRandom();
 	static public var gravity:Int = 1400;
@@ -27,5 +29,7 @@ class Reg
 	static public var rifleSoldierTrackDistance:Int = 300;
 	static public var rifleSoldierJumpSpeed:Int = -100;
 	static public var rifleSoldierBackOffTime:Float = 1;
+	// Collectables
+	static public var numberOfCollectables:Int = 4;
 	
 }

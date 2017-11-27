@@ -1,6 +1,9 @@
 package states;
 
+import entities.environment.Barrel;
+import entities.weapons.Weapon;
 import others.CameraWall;
+import others.Collectable;
 import others.HUD;
 import entities.enemies.Drone;
 import entities.enemies.Enemy;
@@ -30,6 +33,8 @@ class PlayState extends FlxState
 	private var cameraWalls:FlxTypedGroup<others.CameraWall>;
 	private var entities:FlxGroup;
 	private var enemies:FlxTypedGroup<Enemy>;
+	private var collectables:FlxTypedGroup<Collectable>;
+	private var barrels:FlxTypedGroup<Barrel>;
 	private var hud:others.HUD;
 	
 	override public function create():Void
@@ -39,6 +44,12 @@ class PlayState extends FlxState
 		// Attributes Initialization
 		entities = new FlxGroup();
 		enemies = new FlxTypedGroup<Enemy>();
+		collectables = new FlxTypedGroup<Collectable>();
+		barrels = new FlxTypedGroup<Barrel>();
+		
+		// Environment
+		add(collectables);
+		add(barrels);
 		
 		// Tilemap & Enitities
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
@@ -53,7 +64,7 @@ class PlayState extends FlxState
 		// Enemies
 		entities.add(enemies);
 		add(enemies);
-		enemiesFollowingTargetSetUp();
+		enemiesFollowingTargetSetUp();		
 	}
 
 	override public function update(elapsed:Float):Void
@@ -65,18 +76,26 @@ class PlayState extends FlxState
 		cameraHandling();
 		
 		// Collisions
+		// Entities - Tilemap & Walls
 		FlxG.collide(player, cameraWalls);
 		FlxG.overlap(entities, tilemap, entityTileMapCollision);
+		// Player - Enemies
 		FlxG.overlap(player, enemies, playerEnemyCollision);
+		// Weapons - Enemies
 		FlxG.overlap(player.pistolBullets, enemies, bulletEnemyCollision);
 		FlxG.overlap(player.knife, enemies, knifeEnemyCollision);
 		FlxG.collide(player.grenades, tilemap);
 		for (grenade in player.grenades)
 			if (grenade.currentState == GrenadeState.EXPLODING)
 				FlxG.overlap(grenade.explosionBox, enemies, grenadeEnemyCollision);
+		// Enemy Weapons - Player
 		for (enemy in enemies)
 			if (enemy.getType() == "RifleSoldier")
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
+		// Weapons - Environment
+		FlxG.overlap(player.knife, barrels, weaponBarrelCollision);
+		// Player - Collectables
+		FlxG.overlap(player, collectables, playerCollectableCollision);
 		
 		// HUD Info
 		if (!hud.visible)
@@ -122,6 +141,9 @@ class PlayState extends FlxState
 			case "RifleSoldier":
 				var rifleSoldier = new RifleSoldier(x, y);
 				enemies.add(rifleSoldier);
+			case "Barrel":
+				var barrel = new Barrel(x, y);
+				barrels.add(barrel);
 		}
 	}
 	
@@ -208,6 +230,25 @@ class PlayState extends FlxState
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
 			p.getHit();
+		}
+	}
+	
+	private function weaponBarrelCollision(w:Weapon, b:Barrel):Void 
+	{
+		b.dropItem(collectables);
+		w.kill();
+	}
+	
+	private function playerCollectableCollision(p:Player, c:Collectable):Void 
+	{
+		if (!p.hasJustPickedUpCollectable)
+		{
+			p.pickUpCollectabale(c);
+			if (p.hasJustPickeUpCollectable)
+			{
+				collectables.remove(c);			
+				p.hasJustPickedUpCollectable = false;
+			}
 		}
 	}
 	

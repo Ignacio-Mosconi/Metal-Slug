@@ -9,6 +9,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import others.Collectable;
 
 enum State
 {
@@ -47,6 +48,7 @@ class Player extends Entity
 	private var magAmmo:Int;
 	public var grenadesAmmo(get, null):Int;
 	public var hasJustBeenHit(get, null):Bool;
+	@:isVar public var hasJustPickedUpCollectable(get, set):Bool;
 	public var hasLost(get, null):Bool;
 
 	public function new(?X:Float=0, ?Y:Float=0)
@@ -74,10 +76,11 @@ class Player extends Entity
 		hasJustLaunchedGrenade = false;
 		shootingCooldown = 0;
 		isAimingUpwards = false;
-		totalAmmo = 56;
-		magAmmo = 7;
-		grenadesAmmo = 3;
+		totalAmmo = Reg.pistolMaxAmmo;
+		magAmmo = Reg.pistolMagSize;
+		grenadesAmmo = Reg.maxGrenades;
 		hasJustBeenHit = false;
+		hasJustPickedUpCollectable = false;
 		hasLost = false;
 		
 		// Weapons Creation
@@ -95,7 +98,6 @@ class Player extends Entity
 		stateMachine(elapsed);
 		checkHitboxOffset();
 		trace(currentState);
-		trace(isAimingUpwards);
 		
 		super.update(elapsed);
 	}
@@ -666,6 +668,31 @@ class Player extends Entity
 		hasJustThrownGrenade = false;
 	}
 	
+	private function pickUpCollectable(collectable:Collectable)
+	{
+		switch (collectable.kindOfCollectable)
+		{
+			case 0:
+				if (totalAmmo < Reg.pistolMaxAmmo - Reg.pistolMagSize)
+				{
+					hasJustPickedUpCollectable = true;
+					totalAmmo += Reg.pistolMagSize;
+				}
+			case 1:
+				if (Player.lives < 3)
+				{
+					hasJustPickedUpCollectable = true;
+					Player.lives++;
+				}
+			case 3:
+				if (grenadesAmmo < 3)
+				{
+					hasJustPickedUpCollectable = true;
+					grenadesAmmo = Reg.maxGrenades;
+				}
+		}
+	}
+	
 	// Getters & Setters	
 	function get_pistolBullets():FlxTypedGroup<Bullet> 
 	{
@@ -705,5 +732,15 @@ class Player extends Entity
 	function get_hasLost():Bool 
 	{
 		return hasLost;
+	}
+	
+	function get_hasJustPickedUpCollectable():Bool 
+	{
+		return hasJustPickedUpCollectable;
+	}
+	
+	function set_hasJustPickedUpCollectable(value:Bool):Bool 
+	{
+		return hasJustPickedUpCollectable = value;
 	}
 }
