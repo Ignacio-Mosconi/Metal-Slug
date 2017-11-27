@@ -35,7 +35,12 @@ class Player extends Entity
 	public var knife(get, null):Knife;
 	public var pistolBullets(get, null):FlxTypedGroup<Bullet>;
 	public var grenades(get, null):FlxTypedGroup<Grenade>;
+	private var hasJustJumped:Bool;
 	private var hasJustShot:Bool;
+	private var hasJustLaunchedBullet:Bool;
+	private var hasJustReloaded:Bool;
+	private var hasJustThrownGrenade:Bool;
+	private var hasJustLaunchedGrenade:Bool;
 	private var shootingCooldown:Float;
 	private var isAimingUpwards:Bool;
 	public var totalAmmo(get, null):Int;
@@ -56,12 +61,17 @@ class Player extends Entity
 		
 		// Attributes Initialization
 		lives = Reg.playerMaxLives;
-		width = 64;
+		width = 40;
 		currentState = State.IDLE;
 		speed = Reg.playerNormalSpeed;
 		jumpSpeed = Reg.playerJumpSpeed;
 		acceleration.y = Reg.gravity;
+		hasJustJumped = false;
 		hasJustShot = false;
+		hasJustLaunchedBullet = false;
+		hasJustReloaded = false;
+		hasJustThrownGrenade = false;
+		hasJustLaunchedGrenade = false;
 		shootingCooldown = 0;
 		isAimingUpwards = false;
 		totalAmmo = 56;
@@ -84,6 +94,8 @@ class Player extends Entity
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
+		trace(currentState);
+		trace(isAimingUpwards);
 		
 		super.update(elapsed);
 	}
@@ -102,16 +114,41 @@ class Player extends Entity
 				shoot(elapsed);
 				reload();
 				throwGrenade();
-
-				if (velocity.x != 0)
-					currentState = State.MOVING;
+				
+				if (hasJustThrownGrenade)
+					currentState = State.THROWING_GRENADE;
 				else
 				{
-					if (knife.alive)
-						currentState = State.STABBING;
+					if (hasJustReloaded)
+						currentState = State.RELOADING;
 					else
-						if (height == Reg.playerCrouchedHeight)
-							currentState = State.CROUCHED;
+					{
+						if (hasJustShot && shootingCooldown == 0)
+							currentState = State.SHOOTING;
+						else
+						{
+							if (isAimingUpwards)
+								currentState = State.AIMING_UPWARDS;
+							else
+							{
+								if (knife.alive)
+									currentState = State.STABBING;
+								else
+								{
+									if (height == Reg.playerCrouchedHeight)
+										currentState = State.CROUCHED;
+									else
+									{
+										if (hasJustJumped)
+											currentState = State.PREJUMPING
+										else
+											if (velocity.x != 0)
+												currentState = State.MOVING;
+									}
+								}
+							}
+						}
+					}
 				}
 
 			case State.MOVING:
@@ -121,14 +158,28 @@ class Player extends Entity
 				stab();
 				shoot(elapsed);
 				throwGrenade();
-
-				if (velocity.x == 0)
-					currentState = State.IDLE;
+				
+				if (hasJustThrownGrenade)
+					currentState = State.THROWING_GRENADE;
 				else
 				{
-					if (knife.alive)
-						currentState = State.STABBING;
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
+					{
+						if (knife.alive)
+							currentState = State.STABBING;
+						else
+						{
+							if (hasJustJumped)
+								currentState = State.PREJUMPING;
+							else
+								if (velocity.x == 0)
+									currentState = State.IDLE;
+						}
+					}
 				}
+
 
 			case State.PREJUMPING:
 				if (animation.name != "preJump")
@@ -136,6 +187,7 @@ class Player extends Entity
 
 				if (animation.name == "preJump" && animation.finished)
 				{
+					hasJustJumped = false;
 					velocity.y = jumpSpeed;
 					currentState = State.JUMPING;
 				}
@@ -148,12 +200,20 @@ class Player extends Entity
 				shoot(elapsed);
 				throwGrenade();
 
-				if (velocity.y == 0 && !hasJustShot)
-					currentState = State.LANDING;
+				if (hasJustThrownGrenade)
+					currentState = State.THROWING_GRENADE;
 				else
 				{
-					if (knife.alive)
-						currentState = State.STABBING;
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
+					{
+						if (knife.alive)
+							currentState = State.STABBING;
+						else
+							if (velocity.y == 0)
+								currentState = State.LANDING;
+					}	
 				}
 
 			case State.LANDING:
@@ -162,10 +222,10 @@ class Player extends Entity
 
 				if (animation.name == "land" && animation.finished)
 				{
-					if (velocity.x == 0)
-						currentState = State.IDLE;
-					else
+					if (velocity.x != 0)
 						currentState = State.MOVING;
+					else
+						currentState = State.IDLE;
 				}
 
 			case State.CROUCHED:
@@ -181,18 +241,26 @@ class Player extends Entity
 				stab();
 				shoot(elapsed);
 				throwGrenade();
-
-				if (!FlxG.keys.pressed.DOWN)
-				{
-					y -= 16;
-					height = Reg.playerStandingHeight;
-					offset.y = 0;
-					currentState = State.IDLE;
-				}
+				
+				if (hasJustThrownGrenade)
+					currentState = State.THROWING_GRENADE;
 				else
 				{
-					if (knife.alive)
-						currentState = State.STABBING;
+					if (hasJustShot && shootingCooldown == 0)
+						currentState = State.SHOOTING;
+					else
+					{
+						if (knife.alive)
+							currentState = State.STABBING;
+						else 
+							if (!FlxG.keys.pressed.DOWN)
+							{
+								y -= 16;
+								height = Reg.playerStandingHeight;
+								offset.y = 0;
+								currentState = State.IDLE;
+							}
+					}
 				}
 
 			case State.STABBING:
@@ -214,16 +282,16 @@ class Player extends Entity
 				{
 					knife.kill();
 					
-					if (velocity.y != 0)
-						currentState = State.JUMPING;
+					if (height == Reg.playerCrouchedHeight)
+						currentState = State.CROUCHED;
 					else
 					{
-						if (velocity.x != 0)
-							currentState = State.MOVING;
+						if (velocity.y != 0)
+							currentState = State.JUMPING;
 						else
 						{
-							if (height == Reg.playerCrouchedHeight)
-								currentState = State.CROUCHED;
+							if (velocity.x != 0)
+								currentState = State.MOVING;
 							else
 								currentState = State.IDLE;
 						}
@@ -238,17 +306,38 @@ class Player extends Entity
 				reload();
 				throwGrenade();
 				
-				if (!FlxG.keys.pressed.UP)
+				if (hasJustThrownGrenade)
 				{
 					isAimingUpwards = false;
-					currentState = State.IDLE;
+					currentState = State.THROWING_GRENADE;
 				}
 				else
-					if (knife.alive)
+				{
+					if (hasJustReloaded)
 					{
 						isAimingUpwards = false;
-						currentState = State.STABBING;
+						currentState = State.RELOADING;
 					}
+					else
+					{
+						if (hasJustShot && shootingCooldown == 0)
+							currentState = State.SHOOTING;
+						else
+						{
+							if (knife.alive)
+							{
+								isAimingUpwards = false;
+								currentState = State.STABBING;
+							}
+							else
+								if (!FlxG.keys.pressed.UP)
+								{
+									isAimingUpwards = false;
+									currentState = State.IDLE;
+								}
+						}
+					}
+				}
 				
 			case State.SHOOTING:
 				if (height == Reg.playerStandingHeight && !isAimingUpwards)
@@ -271,23 +360,32 @@ class Player extends Entity
 				if (velocity.y == 0)
 					velocity.x = 0;
 					
+				if ((animation.name == "shoot" || animation.name == "crouchShoot" || animation.name == "shootUpwards")
+				&& animation.curAnim.curFrame == 1 && !hasJustLaunchedBullet)
+				{
+					hasJustLaunchedBullet = true;
+					launchBullet();
+				}
+					
 				if ((animation.name == "shoot" || animation.name == "crouchShoot" || animation.name == "shootUpwards") 
 					&& animation.finished)
 				{
-					if (velocity.y != 0)
-						currentState = State.JUMPING;
+					hasJustLaunchedBullet = false;
+					
+					if (isAimingUpwards)
+						currentState = State.AIMING_UPWARDS;
 					else
 					{
-						if (velocity.x != 0)
-							currentState = State.MOVING;
+						if (height == Reg.playerCrouchedHeight)
+							currentState = State.CROUCHED;
 						else
 						{
-							if (height == Reg.playerCrouchedHeight)
-								currentState = State.CROUCHED;
+							if (velocity.y != 0)
+								currentState = State.JUMPING;
 							else
 							{
-								if (isAimingUpwards)
-									currentState = State.AIMING_UPWARDS;
+								if (velocity.x != 0)
+									currentState = State.MOVING;
 								else
 									currentState = State.IDLE;
 							}
@@ -303,6 +401,7 @@ class Player extends Entity
 				
 				if (animation.name == "reload" && animation.finished)
 				{
+					hasJustReloaded = false;
 					if (isAimingUpwards)
 						currentState = State.AIMING_UPWARDS;
 					else
@@ -322,31 +421,33 @@ class Player extends Entity
 				if (velocity.y == 0)
 					velocity.x = 0;
 					
+				if ((animation.name == "throwGrenade" || animation.name == "crouchThrowGrenade") && animation.curAnim.curFrame == 2
+				&& !hasJustLaunchedGrenade)
+				{
+					hasJustLaunchedGrenade = true;
+					launchGrenade();
+				}
 				if ((animation.name == "throwGrenade" || animation.name == "crouchThrowGrenade") && animation.finished)
 				{
-					if (facing == FlxObject.LEFT)
-					{
-						var grenade = new Grenade(x + 8, y, facing);
-						grenades.add(grenade);
-					}
-					else
-					{
-						var grenade = new Grenade(x + width, y, facing);
-						grenades.add(grenade);
-					}
+					hasJustLaunchedGrenade = false;
 					
-					if (velocity.y != 0)
-						currentState = State.JUMPING;
+					if (isAimingUpwards)
+						currentState = State.AIMING_UPWARDS;
 					else
 					{
-						if (velocity.x != 0)
-							currentState = State.MOVING;
+						if (height == Reg.playerCrouchedHeight)
+							currentState = State.CROUCHED;
 						else
 						{
-							if (height == Reg.playerCrouchedHeight)
-								currentState = State.CROUCHED;
+							if (velocity.y != 0)
+								currentState = State.JUMPING;
 							else
-								currentState = State.IDLE;
+							{
+								if (velocity.x != 0)
+									currentState = State.MOVING;
+								else
+									currentState = State.IDLE;
+							}
 						}
 					}
 				}
@@ -382,7 +483,7 @@ class Player extends Entity
 	{
 		if (FlxG.keys.justPressed.S)
 		{
-			currentState = State.PREJUMPING;
+			hasJustJumped = true;
 		}
 	}
 
@@ -412,39 +513,16 @@ class Player extends Entity
 	private function aimUpwards():Void
 	{
 		if (FlxG.keys.pressed.UP)
-		{
 			isAimingUpwards = true;
-			currentState = State.AIMING_UPWARDS;
-		}
 	}
 	
 	private function shoot(time:Float):Void
 	{
 		if (FlxG.keys.justPressed.A && !hasJustShot && magAmmo > 0)
 		{
-			currentState = State.SHOOTING;
 			hasJustShot = true;
 			shootingCooldown = 0;
 			magAmmo--;
-			if (!isAimingUpwards)
-			{
-				Weapon.directionToFace = facing;
-				if (facing == FlxObject.LEFT)
-				{
-					var bullet = new Bullet(x - 4, y + 20, facing);
-					pistolBullets.add(bullet);
-				}
-				else
-				{
-					var bullet = new Bullet(x + width, y + 20, facing);
-					pistolBullets.add(bullet);
-				}			
-			}
-			else
-			{
-				var bullet = new Bullet(x + width / 2, y, FlxObject.UP);
-				pistolBullets.add(bullet);
-			}
 		}
 		else
 		{
@@ -460,14 +538,14 @@ class Player extends Entity
 		{
 			if (totalAmmo >= Reg.pistolMagSize)
 			{
-				currentState = State.RELOADING;
+				hasJustReloaded = true;
 				magAmmo = Reg.pistolMagSize;
 				totalAmmo -= Reg.pistolMagSize;
 			}
 			else
 				if (totalAmmo > 0)
 				{
-					currentState = State.RELOADING;
+					hasJustReloaded = true;
 					magAmmo = totalAmmo;
 					totalAmmo = 0;
 				}
@@ -478,7 +556,7 @@ class Player extends Entity
 	{
 		if (FlxG.keys.justPressed.E && grenadesAmmo > 0)
 		{
-			currentState = State.THROWING_GRENADE;
+			hasJustThrownGrenade = true;
 			Weapon.directionToFace = facing;
 			grenadesAmmo--;
 		}
@@ -488,9 +566,9 @@ class Player extends Entity
 	private function checkHitboxOffset():Void 
 	{
 		if (facing == FlxObject.LEFT)
-			offset.x = 16;
+			offset.x = 30;
 		else
-			offset.x = 0;
+			offset.x = 10;
 	}
 	
 	private function animationsSetUp():Void 
@@ -547,6 +625,45 @@ class Player extends Entity
 	static public function setLives(Lives):Void
 	{
 		Player.lives = Lives;
+	}
+	
+	private function launchBullet():Void 
+	{
+		if (!isAimingUpwards)
+		{
+			Weapon.directionToFace = facing;
+			if (facing == FlxObject.LEFT)
+			{
+				var bullet = new Bullet(x - 4, y + 20, facing);
+				pistolBullets.add(bullet);
+			}
+			else
+			{
+				var bullet = new Bullet(x + width, y + 20, facing);
+				pistolBullets.add(bullet);
+			}			
+		}
+		else
+		{
+			var bullet = new Bullet(x + width / 2, y, FlxObject.UP);
+			pistolBullets.add(bullet);
+		}
+	}
+	
+	private function launchGrenade():Void 
+	{
+		if (facing == FlxObject.LEFT)
+		{
+			var grenade = new Grenade(x + 8, y, facing);
+			grenades.add(grenade);
+		}
+		else
+		{
+			var grenade = new Grenade(x + width, y, facing);
+			grenades.add(grenade);
+		}
+		
+		hasJustThrownGrenade = false;
 	}
 	
 	// Getters & Setters	

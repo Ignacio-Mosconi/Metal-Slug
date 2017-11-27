@@ -19,6 +19,7 @@ class PauseState extends FlxSubState
 		pause = new FlxText(0, FlxG.height / 4, FlxG.width, "Paused", 24, true);
 		pause.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF660000, 2, 1);
 		pause.alignment = FlxTextAlign.CENTER;
+		pause.scrollFactor.set(0, 0);
 		add(pause);
 		
 		resumeButton = new FlxButton(0, 0, "Resume", clickResume);

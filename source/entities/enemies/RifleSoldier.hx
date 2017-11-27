@@ -33,7 +33,7 @@ class RifleSoldier extends Enemy
 		animationsSetUp();
 		
 		// Attributes Initialization
-		width = 64;
+		width = 40;
 		speed = Reg.rifleSoldierSpeed;
 		currentState = RifleSoldierState.WANDERING;
 		walkOrigin = Std.int(X);
@@ -207,9 +207,9 @@ class RifleSoldier extends Enemy
 	private function checkHitboxOffset():Void 
 	{
 		if (facing == FlxObject.LEFT)
-			offset.x = 16;
+			offset.x = 30;
 		else
-			offset.x = 0;
+			offset.x = 10;
 	}
 	
 	private function endDeath(f:FlxFlicker):Void 

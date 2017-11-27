@@ -236,6 +236,7 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.ENTER)
 		{
 			hud.visible = false;
+			FlxG.mouse.visible = true;
 			openSubState(new PauseState());
 		}
 	}
