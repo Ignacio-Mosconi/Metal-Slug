@@ -16,7 +16,6 @@ enum RifleSoldierState
 }
 class RifleSoldier extends Enemy 
 {
-	private var currentState:RifleSoldierState;
 	private var walkOrigin:Int;
 	private var distanceWalked:Int;
 	public var rifleBullets(get, null):FlxTypedGroup<Bullet>;
@@ -52,6 +51,7 @@ class RifleSoldier extends Enemy
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
+		checkLeftBoundary();
 		
 		super.update(elapsed);		
 	}
@@ -178,7 +178,7 @@ class RifleSoldier extends Enemy
 		return hasDetectedPlayer;
 	}
 	
-	override public function getDamage():Void
+	override public function getDamage(?damage:Int):Void
 	{
 		super.getDamage();
 		
@@ -211,6 +211,12 @@ class RifleSoldier extends Enemy
 			offset.x = 30;
 		else
 			offset.x = 10;
+	}
+	
+	private	function checkLeftBoundary():Void 
+	{
+		if (x + width < camera.scroll.x)
+			kill();
 	}
 	
 	private function endDeath(f:FlxFlicker):Void 

@@ -10,16 +10,17 @@ enum TruckState
 	PARKED;
 	MOVING;
 	SPAWNING_UNITS;
+	CHARGING;
 	EXPLODING;
 }
 class Truck extends Enemy 
 {
-	private var currentState:TruckState;
 	private var hitPoints:Int;
 	private var enemiesSpawned:FlxTypedGroup<Enemy>;
 	private var hasJustSpawnedEnemy:Bool;
 	private var spawnTimer:Float;
 	private var explosion:FlxTypedEmitter<FlxParticle>;
+	private var unitsSpawned:Int;
 	
 	public function new(?X, ?Y, enemies:FlxTypedGroup<Enemy>) 
 	{
@@ -37,14 +38,12 @@ class Truck extends Enemy
 		hasJustSpawnedEnemy = false;
 		spawnTimer = 0;
 		enemiesSpawned = enemies;
+		unitsSpawned = 0;
 	}
 	
 	override public function update(elapsed:Float)
 	{
 		stateMachine(elapsed);
-		trace(currentState);
-		trace(spawnTimer);
-		trace(hasJustSpawnedEnemy);
 		
 		super.update(elapsed);
 	}
@@ -56,7 +55,7 @@ class Truck extends Enemy
 			case TruckState.PARKED:
 				animation.play("parked");
 				
-				if (camera.scroll.x + 2 * FlxG.width > x)
+				if (camera.scroll.x + 3/2 * FlxG.width > x)
 				{
 					velocity.x = speed;
 					currentState = TruckState.MOVING;
@@ -79,7 +78,22 @@ class Truck extends Enemy
 				
 				if (hitPoints <= 0)
 					currentState = TruckState.EXPLODING;
+				else
+					if (unitsSpawned == Reg.truckSpawnLimit)
+					{
+						velocity.x = speed;
+						currentState = TruckState.CHARGING;
+					}
 				
+			case TruckState.CHARGING:
+				animation.play("move");
+				
+				if (x + width < camera.scroll.x)
+					kill();
+					
+				if (hitPoints <= 0)
+					currentState = TruckState.EXPLODING;
+					
 			case TruckState.EXPLODING:
 				if (animation.name != "explode")
 				{
@@ -99,13 +113,14 @@ class Truck extends Enemy
 	
 	private function spawnEnemy(time:Float):Void 
 	{
-		if (!hasJustSpawnedEnemy && spawnTimer >= Reg.truckEnemySpawnTime)
+		if (!hasJustSpawnedEnemy)
 		{
 			var soldier = new RifleSoldier(x + width, y);
 			soldier.followingTarget = followingTarget;
 			enemiesSpawned.add(soldier);
 			hasJustSpawnedEnemy = true;
 			spawnTimer = 0;
+			unitsSpawned++;
 		}
 		else
 		{
@@ -128,11 +143,11 @@ class Truck extends Enemy
 		FlxG.state.add(explosion);
 	}
 	
-	override public function getDamage():Void
+	override public function getDamage(?damage:Int):Void
 	{
 		animation.play("getHit");
-		hitPoints--;
-		if (hitPoints == 0)
+		hitPoints -= (damage != null) ? damage: 1;
+		if (hitPoints <= 0)
 		{
 			super.getDamage();
 			Reg.score += Reg.truckScore;

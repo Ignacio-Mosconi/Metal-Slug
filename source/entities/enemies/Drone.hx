@@ -12,7 +12,6 @@ class Drone extends Enemy
 	private var frequency:Float;
 	private var time:Float;
 	private var originY:Float;
-	private var currentState:DroneState;
 	private var hasAppeared:Bool;
 	
 	public function new(?X, ?Y) 
@@ -69,7 +68,7 @@ class Drone extends Enemy
 		}
 	}
 	
-	override public function getDamage():Void
+	override public function getDamage(?damage:Int):Void
 	{
 		super.getDamage();
 		

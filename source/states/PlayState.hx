@@ -210,7 +210,7 @@ class PlayState extends FlxState
 			p.getHit();
 		}
 		else
-			if (e.getType() == "Truck")
+			if (e.getType() == "Truck" && e.currentState != TruckState.CHARGING)
 				FlxObject.separate(p, e);
 	}
 	
@@ -231,8 +231,14 @@ class PlayState extends FlxState
 	
 	private function grenadeEnemyCollision(eB:ExplosionBox, e:Enemy):Void
 	{
-		if (!e.isGettingDamage)
+		if (!e.isGettingDamage && e.getType() != "Truck")
 			e.getDamage();
+		else
+			if (!e.isGettingDamage)
+			{
+				eB.destroy();
+				e.getDamage(10);
+			}
 	}
 	
 	private function enemyBulletPlayerCollision(b:Bullet, p:Player):Void 

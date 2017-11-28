@@ -2,11 +2,11 @@ package entities.enemies;
 
 import entities.Entity;
 import entities.player.Player;
-import flixel.group.FlxGroup.FlxTypedGroup;
 
 class Enemy extends Entity
 {
 	private var speed:Int;
+	@:isVar public var currentState(get, set):Dynamic;
 	public var isGettingDamage(get, null):Bool;
 	private var followingTarget:Player;
 	
@@ -17,7 +17,7 @@ class Enemy extends Entity
 		isGettingDamage = false;
 	}
 	
-	public function getDamage():Void
+	public function getDamage(?damage:Int):Void
 	{
 		isGettingDamage = true;
 	}
@@ -35,5 +35,15 @@ class Enemy extends Entity
 	function get_isGettingDamage():Bool 
 	{
 		return isGettingDamage;
+	}
+	
+	function get_currentState():Dynamic
+	{
+		return currentState;
+	}
+	
+	function set_currentState(value:Dynamic):Dynamic 
+	{
+		return currentState = value;
 	}
 }
