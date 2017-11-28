@@ -1,4 +1,5 @@
-package entities.weapons;
+package weapons;
+
 import flixel.FlxObject;
 
 class Bullet extends Weapon 

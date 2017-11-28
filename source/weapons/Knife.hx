@@ -1,9 +1,7 @@
-package entities.weapons;
-import entities.weapons.Weapon;
+package weapons;
 
 class Knife extends Weapon 
 {
-
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);

@@ -27,7 +27,7 @@ class PauseState extends FlxSubState
 		resumeButton.screenCenter();
 		add(resumeButton);
 		
-		exitButton = new FlxButton(0, FlxG.height * 3 / 5, "Exit", clickExit);
+		exitButton = new FlxButton(0, FlxG.height * 3 / 5, "Quit", clickQuit);
 		exitButton.scale.set(4 / 3, 4 / 3);
 		exitButton.screenCenter(X);
 		add(exitButton);
@@ -39,7 +39,7 @@ class PauseState extends FlxSubState
 		close();
 	}
 	
-	private function clickExit():Void
+	private function clickQuit():Void
 	{
 		camera.fade(FlxColor.BLACK, 1, false, function()
 		{

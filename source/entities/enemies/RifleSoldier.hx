@@ -1,5 +1,6 @@
 package entities.enemies;
-import entities.weapons.Bullet;
+
+import weapons.Bullet;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;

@@ -31,5 +31,6 @@ class Reg
 	static public var rifleSoldierBackOffTime:Float = 1;
 	// Collectables
 	static public var numberOfCollectables:Int = 4;
+	static public var invincibilityPowerUpTime:Float = 10;
 	
 }

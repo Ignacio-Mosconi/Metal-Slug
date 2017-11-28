@@ -5,7 +5,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 
 class Collectable extends FlxSprite 
 {
-	private var kindOfCollectable(get, null):Int;
+	public var kindOfCollectable(get, null):Int;
 	
 	public function new(?X:Float=0, ?Y:Float=0, KindOfCollectable:Int) 
 	{

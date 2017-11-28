@@ -1,4 +1,4 @@
-package entities.weapons;
+package weapons;
 
 import flixel.FlxObject;
 import flixel.FlxSprite;

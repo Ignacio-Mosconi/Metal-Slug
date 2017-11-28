@@ -1,41 +1,43 @@
 package states;
 
-import entities.environment.Barrel;
-import entities.weapons.Weapon;
+import entities.player.Player;
+import entities.enemies.Enemy;
+import entities.enemies.Drone;
+import entities.enemies.RifleSoldier;
+import environment.Object;
+import environment.Barrel;
 import others.CameraWall;
 import others.Collectable;
 import others.HUD;
-import entities.enemies.Drone;
-import entities.enemies.Enemy;
-import entities.enemies.RifleSoldier;
-import entities.weapons.Bullet;
-import entities.weapons.ExplosionBox;
-import entities.weapons.Grenade;
-import entities.weapons.Grenade.GrenadeState;
-import entities.weapons.Knife;
-import entities.player.Player;
-import flixel.FlxCamera.FlxCameraFollowStyle;
+import weapons.Weapon;
+import weapons.Bullet;
+import weapons.ExplosionBox;
+import weapons.Grenade;
+import weapons.Grenade.GrenadeState;
+import weapons.Knife;
+import flixel.FlxG;
 import flixel.FlxState;
-import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
-import flixel.FlxObject;
-import flixel.FlxG;
 import flixel.util.FlxCollision;
 import flixel.util.FlxColor;
+import flixel.addons.effects.FlxTrail;
+import flixel.FlxCamera.FlxCameraFollowStyle;
+import flixel.addons.editors.ogmo.FlxOgmoLoader;
 
 class PlayState extends FlxState
 {
 	private var player:Player;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
-	private var cameraWalls:FlxTypedGroup<others.CameraWall>;
+	private var cameraWalls:FlxTypedGroup<CameraWall>;
 	private var entities:FlxGroup;
 	private var enemies:FlxTypedGroup<Enemy>;
 	private var collectables:FlxTypedGroup<Collectable>;
-	private var barrels:FlxTypedGroup<Barrel>;
-	private var hud:others.HUD;
+	private var objects:FlxTypedGroup<Object>;
+	private var hud:HUD;
 	
 	override public function create():Void
 	{
@@ -45,13 +47,13 @@ class PlayState extends FlxState
 		entities = new FlxGroup();
 		enemies = new FlxTypedGroup<Enemy>();
 		collectables = new FlxTypedGroup<Collectable>();
-		barrels = new FlxTypedGroup<Barrel>();
+		objects = new FlxTypedGroup<Object>();
 		
-		// Environment
+		// Environment Set Up
 		add(collectables);
-		add(barrels);
+		add(objects);
 		
-		// Tilemap & Enitities
+		// Tilemap & Loader Set Up
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemapSetUp();
 		loader.loadEntities(entityCreator, "Entities");
@@ -61,10 +63,10 @@ class PlayState extends FlxState
 		cameraSetUp();
 		hudSetUp();
 		
-		// Enemies
+		// Entities & Enemies Set Up
 		entities.add(enemies);
-		add(enemies);
 		enemiesFollowingTargetSetUp();		
+		add(entities);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -93,14 +95,19 @@ class PlayState extends FlxState
 			if (enemy.getType() == "RifleSoldier")
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
 		// Weapons - Environment
-		FlxG.overlap(player.knife, barrels, weaponBarrelCollision);
+		for (object in objects)
+			if (object.getType() == "Barrel")
+			{
+				FlxG.overlap(player.knife, object, weaponObjectCollision);
+				FlxG.overlap(player.pistolBullets, object, weaponObjectCollision);
+			}
 		// Player - Collectables
 		FlxG.overlap(player, collectables, playerCollectableCollision);
 		
 		// HUD Info
 		if (!hud.visible)
 			hud.visible = true;
-		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score);
+		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score, player.isInvincible);
 		
 		// Substates Checking
 		checkPauseCondition();
@@ -134,7 +141,6 @@ class PlayState extends FlxState
 			case "Player":
 				player = new Player(x, y);
 				entities.add(player);
-				add(player);
 			case "Drone":
 				var drone = new Drone(x, y);
 				enemies.add(drone);
@@ -143,7 +149,7 @@ class PlayState extends FlxState
 				enemies.add(rifleSoldier);
 			case "Barrel":
 				var barrel = new Barrel(x, y);
-				barrels.add(barrel);
+				objects.add(barrel);
 		}
 	}
 	
@@ -193,7 +199,7 @@ class PlayState extends FlxState
 	
 	private function playerEnemyCollision(p:Player, e:Enemy):Void 
 	{
-		if (!p.hasJustBeenHit && !e.isGettingDamage)
+		if (!p.hasJustBeenHit && !e.isGettingDamage && !p.isInvincible)
 		{
 			FlxObject.separate(p, e);
 			camera.shake(0.01, 0.25);
@@ -225,7 +231,7 @@ class PlayState extends FlxState
 	
 	private function enemyBulletPlayerCollision(b:Bullet, p:Player):Void 
 	{
-		if (!p.hasJustBeenHit)
+		if (!p.hasJustBeenHit && !p.isInvincible)
 		{
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
@@ -233,9 +239,10 @@ class PlayState extends FlxState
 		}
 	}
 	
-	private function weaponBarrelCollision(w:Weapon, b:Barrel):Void 
+	private function weaponObjectCollision(w:Weapon, o):Void 
 	{
-		b.dropItem(collectables);
+		if (o.getType() == "Barrel")
+			o.dropItem(collectables);
 		w.kill();
 	}
 	
@@ -243,8 +250,8 @@ class PlayState extends FlxState
 	{
 		if (!p.hasJustPickedUpCollectable)
 		{
-			p.pickUpCollectabale(c);
-			if (p.hasJustPickeUpCollectable)
+			p.pickUpCollectable(c);
+			if (p.hasJustPickedUpCollectable)
 			{
 				collectables.remove(c);			
 				p.hasJustPickedUpCollectable = false;
@@ -289,6 +296,5 @@ class PlayState extends FlxState
 			hud.visible = false;
 			openSubState(new DeathState());
 		}
-	}
-	
+	}	
 }

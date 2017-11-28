@@ -1,11 +1,11 @@
-package entities.environment;
+package environment;
 
+import others.Collectable;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import others.Collectable;
 
-class Barrel extends FlxSprite 
+class Barrel extends Object 
 {
 	private var droppedItem:Int;
 	
@@ -31,9 +31,14 @@ class Barrel extends FlxSprite
 		solid = false;
 		if (Reg.random.bool(35))
 		{
-			droppedItem = Reg.random.int(0, Reg.numberOfCollectables);
+			droppedItem = Reg.random.int(0, Reg.numberOfCollectables - 1);
 			var collectable = new Collectable(x, y + 16, droppedItem);
 			collectables.add(collectable);
 		}		
+	}
+	
+	override public function getType():String
+	{
+		return "Barrel";
 	}
 }

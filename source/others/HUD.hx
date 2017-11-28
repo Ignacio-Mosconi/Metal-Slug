@@ -20,20 +20,23 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	private var grenadesSprite:FlxSprite;
 	private var score:FlxText;
 	private var playerMagBar:FlxBar;
+	private var playerPowerUpBar:FlxBar;
 	
 	public function new(player:Player)
 	{
 		super();
 		
 		backgroundSetUp();
-		playerMagBarSetUp(player);
 		livesSetUp();	
 		totalAmmoSetUp();
 		grenadesSetUp();
 		scoreSetUp();
+		playerMagBarSetUp(player);
+		powerUpBarSetUp(player);
 
 	}
-	public function updateHUD(Lives:Int, Ammo:Int, Grenades:Int, Score:Int):Void
+	
+	public function updateHUD(Lives:Int, Ammo:Int, Grenades:Int, Score:Int, PowerUp:Bool):Void
 	{
 		lives.text = Std.string(Lives);
 		lives.color = (Lives < 2) ? FlxColor.RED: FlxColor.WHITE;
@@ -45,6 +48,8 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		grenades.color = (Grenades < 2) ? FlxColor.RED: FlxColor.WHITE;
 				
 		score.text = "Score: " + Std.string(Score);
+		
+		playerPowerUpBar.visible = PowerUp ? true: false;
 	}
 	
 	private function backgroundSetUp():Void 
@@ -106,9 +111,17 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	
 	private function playerMagBarSetUp(player:Player):Void
 	{
-		playerMagBar = new FlxBar(FlxG.width / 2 - 18, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 100, 12, player, "magAmmo", 0, 7, true);
+		playerMagBar = new FlxBar(FlxG.width / 2 - 18, 10, FlxBarFillDirection.LEFT_TO_RIGHT, 100, 12, player, "magAmmo", 0, Reg.pistolMagSize, true);
 		playerMagBar.createFilledBar(0xFF882222, 0xFFDBC21E, true, FlxColor.BLACK);
 		playerMagBar.scrollFactor.set(0, 0);
 		add(playerMagBar);
+	}
+	
+	private function powerUpBarSetUp(player:entities.player.Player) 
+	{
+		playerPowerUpBar = new FlxBar(4, FlxG.height / 4, FlxBarFillDirection.BOTTOM_TO_TOP, 12, 100, player, "invincibilityTime", 0, Reg.invincibilityPowerUpTime, true);
+		playerPowerUpBar.createFilledBar(0xFF010101, 0xFF239735, true, FlxColor.WHITE);
+		playerPowerUpBar.scrollFactor.set(0, 0);
+		add(playerPowerUpBar);
 	}
 }

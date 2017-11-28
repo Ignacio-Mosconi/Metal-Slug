@@ -1,15 +1,16 @@
 package entities.player;
 
 import entities.Entity;
-import entities.weapons.Bullet;
-import entities.weapons.Grenade;
-import entities.weapons.Knife;
-import entities.weapons.Weapon;
+import others.Collectable;
+import weapons.Bullet;
+import weapons.Grenade;
+import weapons.Knife;
+import weapons.Weapon;
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.addons.effects.FlxTrail;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import others.Collectable;
 
 enum State
 {
@@ -50,6 +51,9 @@ class Player extends Entity
 	public var hasJustBeenHit(get, null):Bool;
 	@:isVar public var hasJustPickedUpCollectable(get, set):Bool;
 	public var hasLost(get, null):Bool;
+	private var powerUpState:FlxTrail;
+	public var isInvincible(get, null):Bool;
+	private var invincibilityTime:Float;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -82,6 +86,8 @@ class Player extends Entity
 		hasJustBeenHit = false;
 		hasJustPickedUpCollectable = false;
 		hasLost = false;
+		isInvincible = false;
+		invincibilityTime = 0;
 		
 		// Weapons Creation
 		knife = new Knife();
@@ -91,13 +97,18 @@ class Player extends Entity
 		FlxG.state.add(pistolBullets);
 		grenades = new FlxTypedGroup<Grenade>();
 		FlxG.state.add(grenades);
+		
+		// Power Up Creation
+		powerUpState = new FlxTrail(this, null, 4, 20, 0.4, 0.1);
+		powerUpState.active = false;
+		FlxG.state.add(powerUpState);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		stateMachine(elapsed);
 		checkHitboxOffset();
-		trace(currentState);
+		checkInvincibilty(elapsed);
 		
 		super.update(elapsed);
 	}
@@ -609,11 +620,11 @@ class Player extends Entity
 	{
 		super.reset(X, Y);
 		
-		FlxFlicker.flicker(this, 3, 0.25, true, true, endInvincibility);
+		FlxFlicker.flicker(this, 3, 0.25, true, true, endSpawningInvincibility);
 		currentState = State.IDLE;
 	}
 	
-	function endInvincibility(f:FlxFlicker):Void 
+	private function endSpawningInvincibility(f:FlxFlicker):Void 
 	{
 		hasJustBeenHit = false;
 	}
@@ -668,12 +679,12 @@ class Player extends Entity
 		hasJustThrownGrenade = false;
 	}
 	
-	private function pickUpCollectable(collectable:Collectable)
+	public function pickUpCollectable(collectable:Collectable)
 	{
 		switch (collectable.kindOfCollectable)
 		{
 			case 0:
-				if (totalAmmo < Reg.pistolMaxAmmo - Reg.pistolMagSize)
+				if (totalAmmo <= Reg.pistolMaxAmmo - Reg.pistolMagSize)
 				{
 					hasJustPickedUpCollectable = true;
 					totalAmmo += Reg.pistolMagSize;
@@ -684,12 +695,35 @@ class Player extends Entity
 					hasJustPickedUpCollectable = true;
 					Player.lives++;
 				}
-			case 3:
+			case 2:
 				if (grenadesAmmo < 3)
 				{
 					hasJustPickedUpCollectable = true;
 					grenadesAmmo = Reg.maxGrenades;
 				}
+			case 3:
+				if (!isInvincible)
+				{
+					hasJustPickedUpCollectable = true;
+					isInvincible = true;
+					powerUpState.active = true;
+					powerUpState.visible = true;
+					invincibilityTime = Reg.invincibilityPowerUpTime;
+				}
+		}
+	}
+	
+	private function checkInvincibilty(time:Float)
+	{
+		if (isInvincible)
+		{
+			invincibilityTime -= time;
+			if (invincibilityTime <= 0)
+			{
+				isInvincible = false;
+				powerUpState.active = false;
+				powerUpState.visible = false;
+			}
 		}
 	}
 	
@@ -742,5 +776,10 @@ class Player extends Entity
 	function set_hasJustPickedUpCollectable(value:Bool):Bool 
 	{
 		return hasJustPickedUpCollectable = value;
+	}
+	
+	function get_isInvincible():Bool 
+	{
+		return isInvincible;
 	}
 }
