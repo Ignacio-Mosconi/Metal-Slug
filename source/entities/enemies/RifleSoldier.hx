@@ -183,8 +183,8 @@ class RifleSoldier extends Enemy
 		super.getDamage();
 		
 		velocity.x = 0;
-		currentState =  RifleSoldierState.DYING;
 		Reg.score += Reg.rifleSoldierScore;
+		currentState =  RifleSoldierState.DYING;
 	}
 	
 	override public function getType():String

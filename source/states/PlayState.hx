@@ -1,5 +1,6 @@
 package states;
 
+import entities.enemies.Truck;
 import entities.player.Player;
 import entities.enemies.Enemy;
 import entities.enemies.Drone;
@@ -65,7 +66,7 @@ class PlayState extends FlxState
 		
 		// Entities & Enemies Set Up
 		entities.add(enemies);
-		enemiesFollowingTargetSetUp();		
+		enemiesFollowingTargetSetUp();
 		add(entities);
 	}
 
@@ -74,7 +75,7 @@ class PlayState extends FlxState
 		super.update(elapsed);
 		
 		// Miscellaneus
-		garbageCollector();
+		//garbageCollector();
 		cameraHandling();
 		
 		// Collisions
@@ -111,7 +112,6 @@ class PlayState extends FlxState
 		
 		// Substates Checking
 		checkPauseCondition();
-		
 		checkLoseCondition();
 	}
 	
@@ -147,6 +147,9 @@ class PlayState extends FlxState
 			case "RifleSoldier":
 				var rifleSoldier = new RifleSoldier(x, y);
 				enemies.add(rifleSoldier);
+			case "Truck":
+				var truck = new Truck(x, y, enemies);
+				enemies.add(truck);
 			case "Barrel":
 				var barrel = new Barrel(x, y);
 				objects.add(barrel);

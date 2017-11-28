@@ -2,6 +2,7 @@ package entities.enemies;
 
 import entities.Entity;
 import entities.player.Player;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 class Enemy extends Entity
 {
@@ -24,6 +25,11 @@ class Enemy extends Entity
 	public function setFollowingTarget(target:Player)
 	{
 		followingTarget = target;
+	}
+	
+	public function setEnemiesSpawned(enemies:FlxTypedGroup<Enemy>)
+	{
+		trace("I don't like this solution!");
 	}
 	
 	public function accessWeapon():Dynamic

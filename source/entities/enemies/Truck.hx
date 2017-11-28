@@ -1,6 +1,8 @@
 package entities.enemies;
 
 import flixel.FlxG;
+import flixel.effects.particles.FlxEmitter;
+import flixel.effects.particles.FlxParticle;
 import flixel.group.FlxGroup;
 
 enum TruckState
@@ -17,15 +19,21 @@ class Truck extends Enemy
 	private var enemiesSpawned:FlxTypedGroup<Enemy>;
 	private var hasJustSpawnedEnemy:Bool;
 	private var spawnTimer:Float;
+	private var explosion:FlxTypedEmitter<FlxParticle>;
 	
-	public function new(?X, ?Y, enemyGroup) 
+	public function new(?X, ?Y) 
 	{
 		super(X, Y);
 		
+		loadGraphic(AssetPaths.truck__png, true, 160, 96, false);
+		animation.add("parked", [0], 30, false, false, false);
+		animation.add("move", [0, 1], 12, true, false, false);
+		animation.add("getHit", [2], 30, false, false, false);
+		animation.add("explode", [3, 4, 5, 6, 7], 12, false, false, false);
 		currentState = TruckState.PARKED;
-		hitPoints = Reg.
+		hitPoints = Reg.truckHitPoints;
 		speed = Reg.truckSpeed;
-		enemiesSpawned = enemyGroup;
+		acceleration.y = Reg.gravity;
 		hasJustSpawnedEnemy = false;
 		spawnTimer = 0;
 	}
@@ -33,6 +41,7 @@ class Truck extends Enemy
 	override public function update(elapsed:Float)
 	{
 		stateMachine(elapsed);
+		trace(currentState);
 		
 		super.update(elapsed);
 	}
@@ -42,23 +51,46 @@ class Truck extends Enemy
 		switch (currentState)
 		{
 			case TruckState.PARKED:
+				animation.play("parked");
+				
 				if (camera.scroll.x + 2 * FlxG.width > x)
 				{
 					velocity.x = speed;
 					currentState = TruckState.MOVING;
 				}
+				
 			case TruckState.MOVING:
+				animation.play("move");
+				
 				if (camera.scroll.x + FlxG.width / 2 >= x)
 				{
 					velocity.x = 0;
 					currentState = TruckState.SPAWNING_UNITS;
 				}
-			case TruckState.SPAWNING_UNITS:
-				spawnEnemy(elapsed);
-				if (hitPoints <= 0)
-					currentState = TruckState.EXPLODING;
-			case TruckState.EXPLODING:
 				
+			case TruckState.SPAWNING_UNITS:
+				animation.play("parked");
+				
+				velocity.x = 0;
+				spawnEnemy(elapsed);
+				
+				if (hitPoints <= 0)
+				{
+					explode();
+					currentState = TruckState.EXPLODING;
+				}
+				
+			case TruckState.EXPLODING:
+				if (animation.name != "explode")
+				{
+					animation.play("explode");
+					velocity.y = 0;
+				}
+				
+				if (animation.name == "explode" && animation.finished)
+				{
+					kill();
+				}	
 		}
 	}
 	
@@ -79,8 +111,38 @@ class Truck extends Enemy
 		}
 	}
 	
+	private function explode():Void
+	{
+		explosion = new FlxTypedEmitter<FlxParticle>();
+		explosion.focusOn(this);
+		explosion.launchMode = FlxEmitterMode.CIRCLE;
+		explosion.makeParticles(3, 3, 0xFFEFD10B, 100);
+		explosion.makeParticles(3, 3, 0xFFFE3344, 100);
+		explosion.speed.set(300, 500, 600, 800);
+		explosion.start(true, 0, 0);
+		explosion.lifespan.set(0.4, 0.9);
+		FlxG.state.add(explosion);
+		
+		velocity.y = -100;
+	}
+	
 	override public function getDamage():Void
 	{
 		hitPoints--;
+		if (hitPoints == 0)
+		{
+			super.getDamage();
+			Reg.score += Reg.truckScore;
+		}
+	}
+	
+	override public function getType():String
+	{
+		return "Truck";
+	}
+	
+	public function setEnemiesSpawned(enemies:FlxTypedGroup<Enemy>):Void
+	{
+		enemiesSpawned = enemies;
 	}
 }
