@@ -17,34 +17,35 @@ class MenuState extends FlxState
 
 	override public function create():Void
 	{
-		FlxG.camera.fade(FlxColor.BLACK, 0.5, true);
+		FlxG.camera.fade(FlxColor.BLACK, 1, true, null, false);
 
 		super.create();
-		
-		//background = new FlxBackdrop(AssetPaths.backdrop__png, 1, 1, true, true);
-		//add(background);
 
+		titleSetUp();
+		buttonsSetUp();
+	}
+
+	private function titleSetUp():Void 
+	{
 		title = new FlxText(0, FlxG.height / 4, 0, "Metal Slug", 28, true);
 		title.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF660000, 2, 1);
 		title.screenCenter(X);
 		add(title);
-
+	}
+	
+	private function buttonsSetUp():Void 
+	{
 		playButton = new FlxButton(0, 0, "Play", clickPlay);
 		playButton.scale.set(3 / 2, 3 / 2);
 		playButton.screenCenter();
 		add(playButton);
-
+	
 		exitButton = new FlxButton(0, FlxG.height * 3 / 5, "Exit", clickExit);
 		exitButton.scale.set(4 / 3, 4 / 3);
 		exitButton.screenCenter(X);
 		add(exitButton);
 	}
-
-	override public function update(elapsed:Float):Void
-	{
-		super.update(elapsed);
-	}
-
+	
 	private function clickPlay():Void
 	{
 		FlxG.mouse.visible = false;

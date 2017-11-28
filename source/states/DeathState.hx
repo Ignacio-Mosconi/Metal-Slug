@@ -4,20 +4,21 @@ import entities.player.Player;
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
+import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 
 class DeathState extends FlxSubState 
 {
-	private var death:FlxText;
 	private var gameOver:FlxText;
-	private var instructions:FlxText;
+	private var retryButton:FlxButton;
+	private var quitButton:FlxButton;
 
 	public function new(BGColor:FlxColor= 0x22000000)
 	{
 		super(BGColor);
 
 		gameOverSetUp();
-		instructionsSetUp();
+		buttonsSetUp();
 	}
 
 	override public function update(elapsed:Float)
@@ -46,12 +47,32 @@ class DeathState extends FlxSubState
 		add(gameOver);
 	}
 	
-	private function instructionsSetUp():Void
+	private function buttonsSetUp():Void
 	{
-		instructions = new FlxText(0, FlxG.height / 2, FlxG.width, "Press ESC to go to the main menu", 12, true);
-		instructions.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 1, 1);
-		instructions.alignment = FlxTextAlign.CENTER;
-		instructions.scrollFactor.set(0, 0);
-		add(instructions);
+		retryButton = new FlxButton(0, 0, "Retry", clickRetry);
+		retryButton.scale.set(3 / 2, 3 / 2);
+		retryButton.screenCenter();
+		add(retryButton);
+	
+		quitButton = new FlxButton(0, FlxG.height * 3 / 5, "Quit", clickQuit);
+		quitButton.scale.set(4 / 3, 4 / 3);
+		quitButton.screenCenter(X);
+		add(quitButton);
+	}
+	
+	private function clickRetry():Void
+	{
+		camera.fade(FlxColor.BLACK, 0.5, false, function()
+		{
+			FlxG.switchState(new PlayState());
+		});
+	}
+	
+	private function clickQuit():Void
+	{
+		camera.fade(FlxColor.BLACK, 1, false, function()
+		{
+			FlxG.switchState(new MenuState());
+		});
 	}
 }

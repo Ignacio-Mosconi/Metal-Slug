@@ -6,6 +6,7 @@ class Reg
 	// Player
 	static public var playerMaxLives:Int = 3;
 	static public var playerNormalSpeed:Int = 220;
+	static public var playerPowerUpSpeed:Int = 320;
 	static public var playerJumpSpeed:Int = -500;
 	static public var playerStandingHeight:Int = 64;
 	static public var playerCrouchedHeight:Int = 48;
@@ -22,13 +23,13 @@ class Reg
 	static public var gravity:Int = 1400;
 	static public var score:Int = 0;
 	// Enemies
-	static public var droneScore:Int = 2;
-	static public var rifleSoldierSpeed:Int = 120;
+	static public var droneScore:Int = 5;
+	static public var rifleSoldierSpeed:Int = 100;
 	static public var rifleSoldierScore:Int = 10;
-	static public var rifleSoldierWalkDistance:Int = 200;
+	static public var rifleSoldierWalkDistance:Int = 150;
 	static public var rifleSoldierTrackDistance:Int = 300;
 	static public var rifleSoldierJumpSpeed:Int = -100;
-	static public var rifleSoldierBackOffTime:Float = 1;
+	static public var rifleSoldierBackOffTime:Float = 0.75;
 	static public var truckSpeed:Int = -200;
 	static public var truckEnemySpawnTime:Float = 4;
 	static public var truckHitPoints:Int = 20;

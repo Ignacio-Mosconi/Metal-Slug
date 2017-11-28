@@ -158,7 +158,7 @@ class PlayState extends FlxState
 	
 	private function initialSetUp():Void 
 	{
-		camera.fade(FlxColor.BLACK, 0.5, true, false);
+		camera.fade(FlxColor.BLACK, 0.5, true, null, false);
 		FlxG.worldBounds.set(0, 0, loader.width, loader.height);
 	}
 	
@@ -209,6 +209,9 @@ class PlayState extends FlxState
 			camera.flash(FlxColor.RED, 0.25);
 			p.getHit();
 		}
+		else
+			if (e.getType() == "Truck")
+				FlxObject.separate(p, e);
 	}
 	
 	private function bulletEnemyCollision(b:Bullet, e:Enemy):Void
@@ -297,6 +300,7 @@ class PlayState extends FlxState
 		if (player.hasLost)
 		{
 			hud.visible = false;
+			FlxG.mouse.visible = true;
 			openSubState(new DeathState());
 		}
 	}	

@@ -710,6 +710,7 @@ class Player extends Entity
 					powerUpState.active = true;
 					powerUpState.visible = true;
 					invincibilityTime = Reg.invincibilityPowerUpTime;
+					speed = Reg.playerPowerUpSpeed;
 				}
 		}
 	}
@@ -724,6 +725,7 @@ class Player extends Entity
 				isInvincible = false;
 				powerUpState.active = false;
 				powerUpState.visible = false;
+				speed = Reg.playerNormalSpeed;
 			}
 		}
 	}
@@ -731,7 +733,10 @@ class Player extends Entity
 	private	function checkDeathFromFalling():Void 
 	{
 		if (!isOnScreen())
+		{
+			invincibilityTime = 0;
 			kill();
+		}
 	}
 	
 	// Getters & Setters	

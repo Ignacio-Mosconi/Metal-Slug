@@ -120,7 +120,7 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	private function powerUpBarSetUp(player:entities.player.Player) 
 	{
 		playerPowerUpBar = new FlxBar(4, FlxG.height / 4, FlxBarFillDirection.BOTTOM_TO_TOP, 12, 100, player, "invincibilityTime", 0, Reg.invincibilityPowerUpTime, true);
-		playerPowerUpBar.createFilledBar(0xFF010101, 0xFF239735, true, FlxColor.WHITE);
+		playerPowerUpBar.createFilledBar(0xFF010101, 0xFF124597, true, FlxColor.WHITE);
 		playerPowerUpBar.scrollFactor.set(0, 0);
 		add(playerPowerUpBar);
 	}

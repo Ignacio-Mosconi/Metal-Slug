@@ -27,11 +27,6 @@ class Enemy extends Entity
 		followingTarget = target;
 	}
 	
-	public function setEnemiesSpawned(enemies:FlxTypedGroup<Enemy>)
-	{
-		trace("I don't like this solution!");
-	}
-	
 	public function accessWeapon():Dynamic
 	{
 		return "noWeapon";

@@ -21,7 +21,7 @@ class Truck extends Enemy
 	private var spawnTimer:Float;
 	private var explosion:FlxTypedEmitter<FlxParticle>;
 	
-	public function new(?X, ?Y) 
+	public function new(?X, ?Y, enemies:FlxTypedGroup<Enemy>) 
 	{
 		super(X, Y);
 		
@@ -36,12 +36,15 @@ class Truck extends Enemy
 		acceleration.y = Reg.gravity;
 		hasJustSpawnedEnemy = false;
 		spawnTimer = 0;
+		enemiesSpawned = enemies;
 	}
 	
 	override public function update(elapsed:Float)
 	{
 		stateMachine(elapsed);
 		trace(currentState);
+		trace(spawnTimer);
+		trace(hasJustSpawnedEnemy);
 		
 		super.update(elapsed);
 	}
@@ -75,30 +78,31 @@ class Truck extends Enemy
 				spawnEnemy(elapsed);
 				
 				if (hitPoints <= 0)
-				{
-					explode();
 					currentState = TruckState.EXPLODING;
-				}
 				
 			case TruckState.EXPLODING:
 				if (animation.name != "explode")
 				{
 					animation.play("explode");
-					velocity.y = 0;
+					velocity.y = 100;
 				}
 				
-				if (animation.name == "explode" && animation.finished)
+				if (animation.name == "explode" && animation.curAnim.curFrame == 2)
 				{
-					kill();
-				}	
+					velocity.y = 0;
+					explode();
+				}
+				if (animation.name == "explode" && animation.finished)
+					kill();	
 		}
 	}
 	
 	private function spawnEnemy(time:Float):Void 
 	{
-		if (!hasJustSpawnedEnemy)
+		if (!hasJustSpawnedEnemy && spawnTimer >= Reg.truckEnemySpawnTime)
 		{
 			var soldier = new RifleSoldier(x + width, y);
+			soldier.followingTarget = followingTarget;
 			enemiesSpawned.add(soldier);
 			hasJustSpawnedEnemy = true;
 			spawnTimer = 0;
@@ -122,12 +126,11 @@ class Truck extends Enemy
 		explosion.start(true, 0, 0);
 		explosion.lifespan.set(0.4, 0.9);
 		FlxG.state.add(explosion);
-		
-		velocity.y = -100;
 	}
 	
 	override public function getDamage():Void
 	{
+		animation.play("getHit");
 		hitPoints--;
 		if (hitPoints == 0)
 		{
@@ -139,10 +142,5 @@ class Truck extends Enemy
 	override public function getType():String
 	{
 		return "Truck";
-	}
-	
-	public function setEnemiesSpawned(enemies:FlxTypedGroup<Enemy>):Void
-	{
-		enemiesSpawned = enemies;
 	}
 }

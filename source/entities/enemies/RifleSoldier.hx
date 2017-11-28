@@ -30,7 +30,7 @@ class RifleSoldier extends Enemy
 		loadGraphic(AssetPaths.rifleSoldier__png, true, 80, 64, false);
 		setFacingFlip(FlxObject.LEFT, false, false);
 		setFacingFlip(FlxObject.RIGHT, true, false);
-		facing = FlxObject.RIGHT;
+		facing = FlxObject.LEFT;
 		animationsSetUp();
 		
 		// Attributes Initialization
@@ -39,7 +39,7 @@ class RifleSoldier extends Enemy
 		currentState = RifleSoldierState.WANDERING;
 		walkOrigin = Std.int(X);
 		distanceWalked = 0;
-		velocity.x = speed;
+		velocity.x = -speed;
 		acceleration.y = Reg.gravity;
 		backingOffTime = 0;
 		
