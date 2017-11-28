@@ -109,6 +109,7 @@ class Player extends Entity
 		stateMachine(elapsed);
 		checkHitboxOffset();
 		checkInvincibilty(elapsed);
+		checkDeathFromFalling();
 		
 		super.update(elapsed);
 	}
@@ -725,6 +726,12 @@ class Player extends Entity
 				powerUpState.visible = false;
 			}
 		}
+	}
+	
+	private	function checkDeathFromFalling():Void 
+	{
+		if (!isOnScreen())
+			kill();
 	}
 	
 	// Getters & Setters	
