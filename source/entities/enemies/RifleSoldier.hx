@@ -1,5 +1,6 @@
 package entities.enemies;
 
+import flixel.system.FlxSound;
 import weapons.Bullet;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -20,17 +21,21 @@ class RifleSoldier extends Enemy
 	private var distanceWalked:Int;
 	public var rifleBullets(get, null):FlxTypedGroup<Bullet>;
 	private var backingOffTime:Float;
+	private var footStepSound:FlxSound;
+	private var rifleShotSound:FlxSound;
+	private var deathSound:FlxSound;
 	
 	public function new(?X, ?Y) 
 	{
 		super(X, Y);
 		
-		// Graphics & animations
+		// Graphics, Animations & Sound effects
 		loadGraphic(AssetPaths.rifleSoldier__png, true, 80, 64, false);
 		setFacingFlip(FlxObject.LEFT, false, false);
 		setFacingFlip(FlxObject.RIGHT, true, false);
 		facing = FlxObject.LEFT;
 		animationsSetUp();
+		soundEffectsSetUp();
 		
 		// Attributes Initialization
 		width = 40;
@@ -62,6 +67,7 @@ class RifleSoldier extends Enemy
 		{
 			case RifleSoldierState.WANDERING:
 				animation.play("move");
+				footStepSound.play(false, 0, 700);
 				
 				moveAround();
 				
@@ -83,7 +89,10 @@ class RifleSoldier extends Enemy
 				
 			case RifleSoldierState.SHOOTING:
 				if (animation.name != "shoot")
+				{
 					animation.play("shoot");
+					rifleShotSound.play(true, 0, 700);
+				}
 					
 				if (animation.name == "shoot" && animation.finished)
 				{
@@ -93,6 +102,7 @@ class RifleSoldier extends Enemy
 				}
 			case RifleSoldierState.BACKING_OFF:
 				animation.play("move");
+				footStepSound.play(false, 0, 700);
 				
 				backingOffTime += elapsed;
 				if (backingOffTime >= Reg.rifleSoldierBackOffTime)
@@ -111,7 +121,10 @@ class RifleSoldier extends Enemy
 				
 			case RifleSoldierState.DYING:
 				if (animation.name != "die")
+				{
 					animation.play("die");
+					deathSound.play();
+				}
 					
 				if (animation.name == "die" && animation.finished && !FlxFlicker.isFlickering(this))
 					FlxFlicker.flicker(this, 1, 0.05, true, true, endDeath, null);
@@ -205,6 +218,15 @@ class RifleSoldier extends Enemy
 		animation.add("die", [13, 14, 15], 3, false, false, false);
 	}
 	
+	private	function soundEffectsSetUp():Void
+	{
+		footStepSound = FlxG.sound.load(AssetPaths.footStep__wav, 0.03);
+		footStepSound.proximity(x, y, followingTarget, FlxG.width / 10);
+		rifleShotSound = FlxG.sound.load(AssetPaths.rifleShot__wav, 0.75);
+		rifleShotSound.proximity(x, y, followingTarget, FlxG.width);
+		deathSound = FlxG.sound.load(AssetPaths.enemyDeath__wav, 0.75);
+		deathSound.proximity(x, y, followingTarget, FlxG.width);
+	}
 	private function checkHitboxOffset():Void 
 	{
 		if (facing == FlxObject.LEFT)
@@ -224,6 +246,7 @@ class RifleSoldier extends Enemy
 		kill();
 	}
 	
+	// Getters & Setters
 	function get_rifleBullets():FlxTypedGroup<Bullet> 
 	{
 		return rifleBullets;

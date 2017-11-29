@@ -17,6 +17,7 @@ class DeathState extends FlxSubState
 	{
 		super(BGColor);
 
+		Reg.score = 0;
 		gameOverSetUp();
 		buttonsSetUp();
 	}

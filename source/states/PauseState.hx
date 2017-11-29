@@ -43,6 +43,7 @@ class PauseState extends FlxSubState
 	{
 		camera.fade(FlxColor.BLACK, 1, false, function()
 		{
+			Reg.score = 0;
 			FlxG.mouse.visible = true;
 			FlxG.switchState(new MenuState());
 		});

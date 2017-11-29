@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.effects.particles.FlxEmitter.FlxEmitterMode;
 import flixel.effects.particles.FlxEmitter.FlxTypedEmitter;
 import flixel.effects.particles.FlxParticle;
+import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.helpers.FlxRangeBounds;
 
@@ -21,12 +22,14 @@ class Grenade extends Weapon
 	private var timer:Float;
 	private var explosion:FlxTypedEmitter<FlxParticle>;
 	public var explosionBox(get, null):ExplosionBox;
+	private var explosionSound:FlxSound;
 	
 	public function new(?X:Float=0, ?Y:Float=0, Direction:Int) 
 	{
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.grenade__png, false, 16, 16, false);
+		explosionSound = FlxG.sound.load(AssetPaths.explosion__wav);
 		
 		currentState = GrenadeState.FLYING;
 		speed = Reg.grenadeSpeed;
@@ -52,6 +55,7 @@ class Grenade extends Weapon
 				if (timer >= Reg.grenadeTimer)
 				{
 					explode();
+					explosionSound.play();
 					currentState = GrenadeState.EXPLODING;
 				}
 					

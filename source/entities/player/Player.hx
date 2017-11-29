@@ -1,6 +1,7 @@
 package entities.player;
 
 import entities.Entity;
+import flixel.system.FlxSound;
 import others.Collectable;
 import weapons.Bullet;
 import weapons.Grenade;
@@ -54,16 +55,26 @@ class Player extends Entity
 	private var powerUpState:FlxTrail;
 	public var isInvincible(get, null):Bool;
 	private var invincibilityTime:Float;
+	private var footStepSound:FlxSound;
+	private var jumpSound:FlxSound;
+	private var knifeSlashSound:FlxSound;
+	private var pistolShotSound:FlxSound;
+	private var pistolReloadSound:FlxSound;
+	private var throwGrenadeSound:FlxSound;
+	private var pickUpCollectableSound:FlxSound;
+	private var powerUpSound:FlxSound;
+	private var deathSound:FlxSound;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
 		super(X, Y);
 		
-		// Graphics & Animations
+		// Graphics, Animations & Sound Effects
 		loadGraphic(AssetPaths.player__png, true, 80, 64, true);
 		setFacingFlip(FlxObject.LEFT, true, false);
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		animationsSetUp();
+		soundEffectsSetUp();
 		
 		// Attributes Initialization
 		lives = Reg.playerMaxLives;
@@ -110,7 +121,6 @@ class Player extends Entity
 		checkHitboxOffset();
 		checkInvincibilty(elapsed);
 		checkDeathFromFalling();
-		trace(currentState);
 		
 		super.update(elapsed);
 	}
@@ -121,6 +131,7 @@ class Player extends Entity
 		{
 			case State.IDLE:
 				animation.play("idle");
+				
 				move();
 				jump();
 				crouch();
@@ -173,6 +184,8 @@ class Player extends Entity
 
 			case State.MOVING:
 				animation.play("move");
+				footStepSound.play(false, 0, 700);
+				
 				move();
 				jump();
 				stab();
@@ -208,8 +221,11 @@ class Player extends Entity
 
 			case State.PREJUMPING:
 				if (animation.name != "preJump")
+				{
 					animation.play("preJump");
-				
+					jumpSound.play();
+				}
+					
 				if (hasJustBeenHit && !FlxFlicker.isFlickering(this))
 					currentState = State.DYING;
 				else
@@ -225,7 +241,7 @@ class Player extends Entity
 			case State.JUMPING:
 				if (animation.name != "jump")
 					animation.play("jump");
-
+				
 				stab();
 				shoot(elapsed);
 				throwGrenade();
@@ -312,12 +328,18 @@ class Player extends Entity
 				if (height == Reg.playerStandingHeight)
 				{
 					if (animation.name != "stab")
+					{
 						animation.play("stab");
+						knifeSlashSound.play();
+					}
 				}
 				else
 					if (animation.name != "crouchStab")
+					{
 						animation.play("crouchStab");
-
+						knifeSlashSound.play();
+					}
+					
 				if (velocity.y == 0)
 					velocity.x = 0;
 				knife.x = (facing == FlxObject.LEFT) ? x - knife.width: x + width;
@@ -422,6 +444,7 @@ class Player extends Entity
 				&& animation.curAnim.curFrame == 1 && !hasJustLaunchedBullet)
 				{
 					hasJustLaunchedBullet = true;
+					pistolShotSound.play(true);
 					launchBullet();
 				}
 				
@@ -458,7 +481,10 @@ class Player extends Entity
 				
 			case State.RELOADING:
 				if (animation.name != "reload")
+				{
 					animation.play("reload");
+					pistolReloadSound.play(true, 0, 1000);
+				}
 				
 				velocity.x = 0;
 				
@@ -480,11 +506,17 @@ class Player extends Entity
 				if (height == Reg.playerStandingHeight)
 				{
 					if (animation.name != "throwGrenade")
+					{
 						animation.play("throwGrenade");
+						throwGrenadeSound.play();
+					}
 				}
 				else
 					if (animation.name != "crouchThrowGrenade")
+					{
 						animation.play("crouchThrowGrenade");
+						throwGrenadeSound.play();
+					}
 						
 				if (velocity.y == 0)
 					velocity.x = 0;
@@ -528,7 +560,10 @@ class Player extends Entity
 				
 				case State.DYING:
 					if (animation.name != "die")
+					{
 						animation.play("die");
+						deathSound.play();
+					}
 
 					velocity.x = 0;	
 						
@@ -666,6 +701,18 @@ class Player extends Entity
 		animation.add("die", [46, 47, 48, 49], 3, false, false, false);
 	}
 	
+	private	function soundEffectsSetUp():Void
+	{
+		footStepSound = FlxG.sound.load(AssetPaths.footStep__wav);
+		jumpSound = FlxG.sound.load(AssetPaths.jump__wav);
+		knifeSlashSound = FlxG.sound.load(AssetPaths.knifeSlash__wav);
+		pistolShotSound = FlxG.sound.load(AssetPaths.pistolShot__wav);
+		pistolReloadSound = FlxG.sound.load(AssetPaths.pistolReload__wav);
+		throwGrenadeSound = FlxG.sound.load(AssetPaths.throwGrenade__wav);
+		pickUpCollectableSound = FlxG.sound.load(AssetPaths.pickUpCollectable__wav);
+		powerUpSound = FlxG.sound.load(AssetPaths.powerUp__wav);
+		deathSound = FlxG.sound.load(AssetPaths.playerDeath__wav);
+	}
 	override public function kill():Void
 	{
 		super.kill();
@@ -742,24 +789,28 @@ class Player extends Entity
 				if (totalAmmo <= Reg.pistolMaxAmmo - Reg.pistolMagSize)
 				{
 					hasJustPickedUpCollectable = true;
+					pickUpCollectableSound.play();
 					totalAmmo += Reg.pistolMagSize;
 				}
 			case 1:
 				if (Player.lives < 3)
 				{
 					hasJustPickedUpCollectable = true;
+					pickUpCollectableSound.play();
 					Player.lives++;
 				}
 			case 2:
 				if (grenadesAmmo < 3)
 				{
 					hasJustPickedUpCollectable = true;
+					pickUpCollectableSound.play();
 					grenadesAmmo = Reg.maxGrenades;
 				}
 			case 3:
 				if (!isInvincible)
 				{
 					hasJustPickedUpCollectable = true;
+					powerUpSound.play();
 					isInvincible = true;
 					powerUpState.active = true;
 					powerUpState.visible = true;
@@ -776,6 +827,7 @@ class Player extends Entity
 			invincibilityTime -= time;
 			if (invincibilityTime <= 0)
 			{
+				powerUpSound.play();
 				isInvincible = false;
 				powerUpState.active = false;
 				powerUpState.visible = false;

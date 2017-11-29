@@ -1,9 +1,7 @@
 package environment;
 
 import others.Collectable;
-import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.system.FlxAssets.FlxGraphicAsset;
 
 class Barrel extends Object 
 {
@@ -31,8 +29,8 @@ class Barrel extends Object
 		solid = false;
 		if (Reg.random.bool(45))
 		{
-			droppedItem = Reg.random.int(0,  Reg.numberOfCollectables);
-			var collectable = new Collectable(x, y + 16, droppedItem);
+			droppedItem = Reg.random.int(0,  Reg.numberOfCollectables - 1);
+			var collectable = new Collectable(x + width / 2 - 16, y + height / 2, droppedItem);
 			collectables.add(collectable);
 		}		
 	}

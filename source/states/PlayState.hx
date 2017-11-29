@@ -140,7 +140,6 @@ class PlayState extends FlxState
 		{
 			case "Player":
 				player = new Player(x, y);
-				camera.scroll.x = player.x; // For testing purposes.
 				entities.add(player);
 			case "Drone":
 				var drone = new Drone(x, y);
@@ -171,9 +170,9 @@ class PlayState extends FlxState
 		camera.setScrollBounds(0, loader.width, 0, loader.height);
 		camera.bgColor = 0xFF224466;
 		camera.pixelPerfectRender = false;
-		cameraWalls = new FlxTypedGroup<others.CameraWall>();
-		var leftWall = new others.CameraWall(0, 0, FlxObject.LEFT);
-		var rightWall = new others.CameraWall(0, 0, FlxObject.RIGHT);
+		cameraWalls = new FlxTypedGroup<CameraWall>();
+		var leftWall = new CameraWall(0, 0, FlxObject.LEFT);
+		var rightWall = new CameraWall(FlxG.width, 0, FlxObject.RIGHT);
 		cameraWalls.add(leftWall);
 		cameraWalls.add(rightWall);
 		add(cameraWalls);
@@ -287,9 +286,9 @@ class PlayState extends FlxState
 	private function cameraHandling():Void 
 	{
 		if (camera.scroll.x < loader.width - FlxG.width)
-			camera.setScrollBoundsRect(camera.scroll.x, 0, loader.width, loader.height, false);
+			camera.setScrollBounds(camera.scroll.x, loader.width, 0, loader.height);
 		else
-			camera.setScrollBoundsRect(loader.width - FlxG.width, 0, loader.width, loader.height);
+			camera.setScrollBounds(loader.width - FlxG.width, loader.width, 0, loader.height);
 	}
 	
 	// Substates Methods

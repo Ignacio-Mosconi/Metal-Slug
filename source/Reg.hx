@@ -22,6 +22,7 @@ class Reg
 	static public var random:FlxRandom = new FlxRandom();
 	static public var gravity:Int = 1400;
 	static public var score:Int = 0;
+	static public var highestScore:Int = 0;
 	// Enemies
 	static public var droneScore:Int = 5;
 	static public var rifleSoldierSpeed:Int = 100;
