@@ -29,9 +29,9 @@ class Barrel extends Object
 	{
 		animation.play("destroy");
 		solid = false;
-		if (Reg.random.bool(35))
+		if (Reg.random.bool(45))
 		{
-			droppedItem = Reg.random.int(0, Reg.numberOfCollectables - 1);
+			droppedItem = Reg.random.int(0,  Reg.numberOfCollectables);
 			var collectable = new Collectable(x, y + 16, droppedItem);
 			collectables.add(collectable);
 		}		

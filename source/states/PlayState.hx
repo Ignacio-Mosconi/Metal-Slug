@@ -50,13 +50,11 @@ class PlayState extends FlxState
 		collectables = new FlxTypedGroup<Collectable>();
 		objects = new FlxTypedGroup<Object>();
 		
-		// Environment Set Up
-		add(collectables);
-		add(objects);
-		
-		// Tilemap & Loader Set Up
+		// Tilemap, Loader & Environment Set Up
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		tilemapSetUp();
+		add(collectables);
+		add(objects);
 		loader.loadEntities(entityCreator, "Entities");
 		
 		// Game Set Up
@@ -75,7 +73,7 @@ class PlayState extends FlxState
 		super.update(elapsed);
 		
 		// Miscellaneus
-		//garbageCollector();
+		garbageCollector();
 		cameraHandling();
 		
 		// Collisions
@@ -120,14 +118,16 @@ class PlayState extends FlxState
 	{
 		tilemap = loader.loadTilemap(AssetPaths.tileset__png, 32, 32, "Tiles");
 		tilemap.setTileProperties(0, FlxObject.NONE);
-		for (i in 1...4)
+		for (i in 1...6)
 			tilemap.setTileProperties(i, FlxObject.ANY);
-		for (i in 4...19)
+		for (i in 6...19)
 			tilemap.setTileProperties(i, FlxObject.NONE);
 		for (i in 19...22)
 			tilemap.setTileProperties(i, FlxObject.UP);
 		for (i in 22...26)
 			tilemap.setTileProperties(i, FlxObject.NONE);
+		for (i in 26...30)
+			tilemap.setTileProperties(i, FlxObject.ANY);
 		add(tilemap);
 	}
 	
@@ -140,6 +140,7 @@ class PlayState extends FlxState
 		{
 			case "Player":
 				player = new Player(x, y);
+				camera.scroll.x = player.x; // For testing purposes.
 				entities.add(player);
 			case "Drone":
 				var drone = new Drone(x, y);
@@ -243,7 +244,7 @@ class PlayState extends FlxState
 	
 	private function enemyBulletPlayerCollision(b:Bullet, p:Player):Void 
 	{
-		if (!p.hasJustBeenHit && !p.isInvincible)
+		if (!p.hasJustBeenHit && !p.isInvincible && p.currentState != State.DYING)
 		{
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
@@ -265,6 +266,7 @@ class PlayState extends FlxState
 			p.pickUpCollectable(c);
 			if (p.hasJustPickedUpCollectable)
 			{
+				c.destroy();
 				collectables.remove(c);			
 				p.hasJustPickedUpCollectable = false;
 			}

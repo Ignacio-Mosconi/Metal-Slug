@@ -21,22 +21,6 @@ class DeathState extends FlxSubState
 		buttonsSetUp();
 	}
 
-	override public function update(elapsed:Float)
-	{
-		super.update(elapsed);
-
-		if (FlxG.keys.justPressed.ESCAPE)
-		{
-			Reg.score = 0;
-			Player.setLives(3);
-			FlxG.mouse.visible = true;
-			FlxG.camera.fade(FlxColor.BLACK, 0.5, false, function()
-			{
-				FlxG.switchState(new MenuState()); 
-			});
-		}
-	}
-
 	private function gameOverSetUp():Void
 	{
 		gameOver = new FlxText(0, FlxG.height / 4, FlxG.width, "Game Over", 24, true);
@@ -64,6 +48,7 @@ class DeathState extends FlxSubState
 	{
 		camera.fade(FlxColor.BLACK, 0.5, false, function()
 		{
+			FlxG.mouse.visible = false;
 			FlxG.switchState(new PlayState());
 		});
 	}

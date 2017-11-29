@@ -17,7 +17,7 @@ class PauseState extends FlxSubState
 		super(BGColor);
 		
 		pause = new FlxText(0, FlxG.height / 4, FlxG.width, "Paused", 24, true);
-		pause.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF660000, 2, 1);
+		pause.setBorderStyle(FlxTextBorderStyle.SHADOW, FlxColor.GRAY, 2, 1);
 		pause.alignment = FlxTextAlign.CENTER;
 		pause.scrollFactor.set(0, 0);
 		add(pause);
@@ -43,6 +43,7 @@ class PauseState extends FlxSubState
 	{
 		camera.fade(FlxColor.BLACK, 1, false, function()
 		{
+			FlxG.mouse.visible = true;
 			FlxG.switchState(new MenuState());
 		});
 	}

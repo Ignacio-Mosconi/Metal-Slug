@@ -31,8 +31,8 @@ class Reg
 	static public var rifleSoldierJumpSpeed:Int = -100;
 	static public var rifleSoldierBackOffTime:Float = 0.75;
 	static public var truckSpeed:Int = -200;
-	static public var truckEnemySpawnTime:Float = 4;
-	static public var truckHitPoints:Int = 15;
+	static public var truckEnemySpawnTime:Float = 2.5;
+	static public var truckHitPoints:Int = 20;
 	static public var truckScore:Int = 25;
 	static public var truckSpawnLimit:Int = 7;
 	// Collectables

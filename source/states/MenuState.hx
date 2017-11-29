@@ -28,7 +28,7 @@ class MenuState extends FlxState
 	private function titleSetUp():Void 
 	{
 		title = new FlxText(0, FlxG.height / 4, 0, "Metal Slug", 28, true);
-		title.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF660000, 2, 1);
+		title.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF138735, 2, 1);
 		title.screenCenter(X);
 		add(title);
 	}
@@ -48,9 +48,9 @@ class MenuState extends FlxState
 	
 	private function clickPlay():Void
 	{
-		FlxG.mouse.visible = false;
 		FlxG.camera.fade(FlxColor.BLACK, 0.5, false, function()
 		{
+			FlxG.mouse.visible = false;
 			FlxG.switchState(new PlayState());
 		});
 	}
