@@ -7,6 +7,7 @@ import entities.enemies.Drone;
 import entities.enemies.RifleSoldier;
 import environment.Object;
 import environment.Barrel;
+import flixel.addons.display.FlxBackdrop;
 import others.CameraWall;
 import others.Collectable;
 import others.HUD;
@@ -36,6 +37,8 @@ class PlayState extends FlxState
 	private var collectables:FlxTypedGroup<Collectable>;
 	private var objects:FlxTypedGroup<Object>;
 	private var hud:HUD;
+	private var skyBackDrop:FlxBackdrop;
+	private var mountainBackDrop:FlxBackdrop;
 	
 	override public function create():Void
 	{
@@ -46,9 +49,13 @@ class PlayState extends FlxState
 		enemies = new FlxTypedGroup<Enemy>();
 		collectables = new FlxTypedGroup<Collectable>();
 		objects = new FlxTypedGroup<Object>();
+		skyBackDrop = new FlxBackdrop(AssetPaths.skyBackdrop__png, 0.5, 0, true, false, 0, 0);
+		mountainBackDrop = new FlxBackdrop(AssetPaths.mountainBackdrop__png, 0.6, 0.1, true, false, 32, 0);
 		
 		// Tilemap, Loader & Environment Set Up
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
+		add(skyBackDrop);
+		add(mountainBackDrop);
 		tilemapSetUp();
 		add(collectables);
 		add(objects);
@@ -96,6 +103,9 @@ class PlayState extends FlxState
 			{
 				FlxG.overlap(player.knife, object, weaponObjectCollision);
 				FlxG.overlap(player.pistolBullets, object, weaponObjectCollision);
+				for (grenade in player.grenades)
+					if (grenade.currentState == GrenadeState.EXPLODING)
+						FlxG.overlap(grenade.explosionBox, object, weaponObjectCollision);
 			}
 		// Player - Collectables
 		FlxG.overlap(player, collectables, playerCollectableCollision);
@@ -138,7 +148,6 @@ class PlayState extends FlxState
 			case "Player":
 				player = new Player(x, y);
 				entities.add(player);
-				camera.scroll.x = player.x - 96;
 			case "Drone":
 				var drone = new Drone(x, y);
 				enemies.add(drone);
@@ -165,11 +174,11 @@ class PlayState extends FlxState
 	
 	private function cameraSetUp():Void 
 	{
+		camera.scroll.x = player.x - 96;
 		camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		camera.followLerp = 0.5;
 		camera.targetOffset.set(96, -64);
 		camera.setScrollBounds(0, loader.width, 0, loader.height);
-		camera.bgColor = 0xFF224466;
 		camera.pixelPerfectRender = false;
 		cameraWalls = new FlxTypedGroup<CameraWall>();
 		var leftWall = new CameraWall(0, 0, FlxObject.LEFT);
@@ -229,11 +238,7 @@ class PlayState extends FlxState
 		if (!e.isGettingDamage && e.getType() != "Truck")
 			e.getDamage();
 		else
-			if (!e.isGettingDamage)
-			{
-				k.kill();
-				e.getDamage();
-			}
+			k.kill();
 	}
 	
 	private function grenadeEnemyCollision(eB:ExplosionBox, e:Enemy):Void
@@ -258,7 +263,7 @@ class PlayState extends FlxState
 		}
 	}
 	
-	private function weaponObjectCollision(w:Weapon, o):Void 
+	private function weaponObjectCollision(w:Dynamic, o:Dynamic):Void 
 	{
 		if (o.getType() == "Barrel")
 			o.dropItem(collectables);

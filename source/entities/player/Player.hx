@@ -732,7 +732,11 @@ class Player extends Entity
 		super.reset(X, Y);
 		
 		FlxFlicker.flicker(this, 3, 0.25, true, true, endSpawningInvincibility);
-		currentState = State.IDLE;
+		knife.kill();
+		hasJustShot = false;
+		hasJustThrownGrenade = false;
+		hasJustReloaded = false;
+		currentState = State.JUMPING;
 	}
 	
 	private function endSpawningInvincibility(f:FlxFlicker):Void 
