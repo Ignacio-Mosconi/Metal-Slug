@@ -39,6 +39,7 @@ class PlayState extends FlxState
 	private var hud:HUD;
 	private var skyBackDrop:FlxBackdrop;
 	private var mountainBackDrop:FlxBackdrop;
+	private var treesBackDrop:FlxBackdrop;
 	
 	override public function create():Void
 	{
@@ -51,11 +52,13 @@ class PlayState extends FlxState
 		objects = new FlxTypedGroup<Object>();
 		skyBackDrop = new FlxBackdrop(AssetPaths.skyBackdrop__png, 0.5, 0, true, false, 0, 0);
 		mountainBackDrop = new FlxBackdrop(AssetPaths.mountainBackdrop__png, 0.6, 0.1, true, false, 32, 0);
+		treesBackDrop = new FlxBackdrop(AssetPaths.treesBackdrop__png, 1, 0.1, true, false, 160, 0);
 		
 		// Tilemap, Loader & Environment Set Up
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
 		add(skyBackDrop);
 		add(mountainBackDrop);
+		add(treesBackDrop);
 		tilemapSetUp();
 		add(collectables);
 		add(objects);
