@@ -824,6 +824,9 @@ class Player extends Entity
 					invincibilityTime = Reg.invincibilityPowerUpTime;
 					speed = Reg.playerPowerUpSpeed;
 				}
+			case 4:
+				hasJustPickedUpCollectable = true;
+				Reg.score += Reg.scoreCollectable;
 		}
 	}
 	

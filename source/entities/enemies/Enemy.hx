@@ -2,6 +2,8 @@ package entities.enemies;
 
 import entities.Entity;
 import entities.player.Player;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import weapons.Weapon;
 
 class Enemy extends Entity
 {
@@ -22,14 +24,14 @@ class Enemy extends Entity
 		isGettingDamage = true;
 	}
 	
-	public function setFollowingTarget(target:Player)
+	public function setFollowingTarget(target:Player):Void
 	{
 		followingTarget = target;
 	}
 	
-	public function accessWeapon():Dynamic
+	public function accessWeapon():FlxTypedGroup<Dynamic>
 	{
-		return "noWeapon";
+		return null;
 	}
 	
 	function get_isGettingDamage():Bool 

@@ -37,7 +37,8 @@ class Reg
 	static public var truckScore:Int = 25;
 	static public var truckSpawnLimit:Int = 7;
 	// Collectables
-	static public var numberOfCollectables:Int = 4;
+	static public var numberOfCollectables:Int = 5;
 	static public var invincibilityPowerUpTime:Float = 10;
+	static public var scoreCollectable:Int = 30;
 	
 }

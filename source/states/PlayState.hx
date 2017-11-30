@@ -61,7 +61,6 @@ class PlayState extends FlxState
 		add(mountainBackDrop);
 		add(treesBackDrop);
 		tilemapSetUp();
-		add(collectables);
 		add(objects);
 		loader.loadEntities(entityCreator, "Entities");
 		
@@ -74,9 +73,10 @@ class PlayState extends FlxState
 		entities.add(enemies);
 		enemiesFollowingTargetSetUp();
 		add(entities);
+		add(collectables);
 		
 		// Music
-		//theme = FlxG.sound.load(AssetPaths.mainTheme__wav, 0.35, true, null, false, true, null, null);
+		theme = FlxG.sound.load(AssetPaths.mainTheme__wav, 0.35, true, null, false, true, null, null);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -117,9 +117,11 @@ class PlayState extends FlxState
 		// Player - Collectables
 		FlxG.overlap(player, collectables, playerCollectableCollision);
 		
-		// HUD Info
+		// HUD Info & Sound
 		if (!hud.visible)
 			hud.visible = true;
+		if (!theme.playing)
+			theme.play();
 		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score, player.isInvincible);
 		
 		// Substates Checking
@@ -283,23 +285,52 @@ class PlayState extends FlxState
 		{
 			p.pickUpCollectable(c);
 			if (p.hasJustPickedUpCollectable)
-			{
-				c.destroy();
-				collectables.remove(c);			
-				p.hasJustPickedUpCollectable = false;
-			}
+				c.bePicked(p);
 		}
 	}
 	
 	// Other Methods
-	private function garbageCollector():Void
+	private function garbageCollector():Void	// Let's get rid of the nasty trash!
 	{
 		for (enemy in enemies)
 			if (!enemy.alive)
 			{
 				enemy.destroy();
 				enemies.remove(enemy, true);
+				entities.remove(enemy, true);
 			}
+		for (collectable in collectables)
+			if (!collectable.alive)
+			{
+				collectable.destroy();
+				collectables.remove(collectable, true);
+			}
+		for (object in objects)
+			if (!object.alive)
+			{
+				object.destroy();
+				objects.remove(object, true);
+			}
+		for (bullet in player.pistolBullets)
+			if (!bullet.alive)
+			{
+				bullet.destroy();
+				player.pistolBullets.remove(bullet, true);
+			}
+		for (grenade in player.grenades)
+			if (!grenade.alive)
+			{
+				grenade.destroy();
+				player.grenades.remove(grenade, true);
+			}
+		for (enemy in enemies)
+			if (enemy.accessWeapon() != null)
+				for (bullet in enemy.accessWeapon())
+					if (!bullet.alive)
+					{
+						bullet.destroy();
+						enemy.accessWeapon().remove(bullet, true);
+					}
 	}
 	
 	private function cameraHandling():Void 
@@ -315,6 +346,7 @@ class PlayState extends FlxState
 	{
 		if (FlxG.keys.justPressed.ENTER)
 		{
+			theme.pause();
 			FlxG.sound.play(AssetPaths.select__wav);
 			hud.visible = false;
 			FlxG.mouse.visible = true;
@@ -326,6 +358,7 @@ class PlayState extends FlxState
 	{
 		if (player.hasLost)
 		{
+			theme.pause();
 			hud.visible = false;
 			FlxG.mouse.visible = true;
 			openSubState(new DeathState());

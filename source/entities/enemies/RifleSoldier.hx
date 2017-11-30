@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import weapons.Weapon;
 
 enum RifleSoldierState
 {
@@ -217,7 +218,7 @@ class RifleSoldier extends Enemy
 		return "RifleSoldier";
 	}
 	
-	override public function accessWeapon():Dynamic
+	override public function accessWeapon():FlxTypedGroup<Dynamic>
 	{
 		return rifleBullets;
 	}
@@ -234,7 +235,7 @@ class RifleSoldier extends Enemy
 	{
 		footStepSound = FlxG.sound.load(AssetPaths.footStep__wav, 0.03);
 		footStepSound.proximity(x, y, followingTarget, FlxG.width / 10);
-		detectPlayerSound = FlxG.sound.load(AssetPaths.enemyDetectingPlayer__wav, 1);
+		detectPlayerSound = FlxG.sound.load(AssetPaths.enemyDetectingPlayer__wav, 0.5);
 		detectPlayerSound.proximity(x, y, followingTarget, FlxG.width);
 		rifleShotSound = FlxG.sound.load(AssetPaths.rifleShot__wav, 0.75);
 		rifleShotSound.proximity(x, y, followingTarget, FlxG.width);

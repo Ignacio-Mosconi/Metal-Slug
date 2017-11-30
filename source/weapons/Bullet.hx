@@ -22,7 +22,7 @@ class Bullet extends Weapon
 		super.update(elapsed);
 		
 		if (!isOnScreen())
-			destroy();
+			kill();
 	}
 	
 	private function velocitySetUp():Void 

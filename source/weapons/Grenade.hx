@@ -58,7 +58,7 @@ class Grenade extends Weapon
 				}
 					
 			case GrenadeState.EXPLODING:
-				destroy();
+				kill();
 		}				
 	}
 	
