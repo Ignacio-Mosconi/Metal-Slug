@@ -8,10 +8,10 @@ import entities.enemies.RifleSoldier;
 import environment.Object;
 import environment.Barrel;
 import flixel.addons.display.FlxBackdrop;
+import flixel.system.FlxSound;
 import others.CameraWall;
 import others.Collectable;
 import others.HUD;
-import weapons.Weapon;
 import weapons.Bullet;
 import weapons.ExplosionBox;
 import weapons.Grenade.GrenadeState;
@@ -40,6 +40,7 @@ class PlayState extends FlxState
 	private var skyBackDrop:FlxBackdrop;
 	private var mountainBackDrop:FlxBackdrop;
 	private var treesBackDrop:FlxBackdrop;
+	private var theme:FlxSound;
 	
 	override public function create():Void
 	{
@@ -52,7 +53,7 @@ class PlayState extends FlxState
 		objects = new FlxTypedGroup<Object>();
 		skyBackDrop = new FlxBackdrop(AssetPaths.skyBackdrop__png, 0.5, 0, true, false, 0, 0);
 		mountainBackDrop = new FlxBackdrop(AssetPaths.mountainBackdrop__png, 0.6, 0.1, true, false, 32, 0);
-		treesBackDrop = new FlxBackdrop(AssetPaths.treesBackdrop__png, 1, 0.1, true, false, 160, 0);
+		treesBackDrop = new FlxBackdrop(AssetPaths.treesBackdrop__png, 1, 0.1, true, false, 320, 0);
 		
 		// Tilemap, Loader & Environment Set Up
 		loader = new FlxOgmoLoader(AssetPaths.Level__oel);
@@ -73,6 +74,9 @@ class PlayState extends FlxState
 		entities.add(enemies);
 		enemiesFollowingTargetSetUp();
 		add(entities);
+		
+		// Music
+		//theme = FlxG.sound.load(AssetPaths.mainTheme__wav, 0.35, true, null, false, true, null, null);
 	}
 
 	override public function update(elapsed:Float):Void
