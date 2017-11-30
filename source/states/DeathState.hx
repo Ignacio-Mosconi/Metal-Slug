@@ -37,11 +37,13 @@ class DeathState extends FlxSubState
 		retryButton = new FlxButton(0, 0, "Retry", clickRetry);
 		retryButton.scale.set(3 / 2, 3 / 2);
 		retryButton.screenCenter();
+		retryButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 		add(retryButton);
 	
 		quitButton = new FlxButton(0, FlxG.height * 3 / 5, "Quit", clickQuit);
 		quitButton.scale.set(4 / 3, 4 / 3);
 		quitButton.screenCenter(X);
+		quitButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 		add(quitButton);
 	}
 	

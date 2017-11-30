@@ -1,4 +1,6 @@
 package entities.enemies;
+import flixel.FlxG;
+import flixel.system.FlxSound;
 
 enum DroneState
 {
@@ -13,6 +15,8 @@ class Drone extends Enemy
 	private var time:Float;
 	private var originY:Float;
 	private var hasAppeared:Bool;
+	private var flyingSound:FlxSound;
+	private var explodingSound:FlxSound;
 	
 	public function new(?X, ?Y) 
 	{
@@ -21,6 +25,10 @@ class Drone extends Enemy
 		loadGraphic(AssetPaths.drone__png, true, 32, 32, false);
 		animation.add("fly", [0, 1, 2], 12, true, false, false);
 		animation.add("explode", [3, 4, 5, 6, 7], 8, false, false, false);
+		flyingSound = FlxG.sound.load(AssetPaths.droneFlying__wav, 0.02);
+		flyingSound.proximity(x, y, followingTarget, FlxG.width / 10);
+		explodingSound = FlxG.sound.load(AssetPaths.droneExploding__wav, 0.9);
+		explodingSound.proximity(x, y, followingTarget, FlxG.width);
 		
 		speed = Reg.random.int(-120, -80);
 		amplitude = Reg.random.int(32, 64);
@@ -39,7 +47,7 @@ class Drone extends Enemy
 		if (hasAppeared)
 		{
 			stateMachine(elapsed);
-			if (!isOnScreen())
+			if (camera.scroll.x > x + width)
 				kill();
 		}
 		
@@ -52,6 +60,7 @@ class Drone extends Enemy
 		{
 			case DroneState.FLYING:
 				animation.play("fly");
+				flyingSound.play();
 				
 				time += elapsed;
 				y = amplitude * Math.cos(frequency * time) + originY;
@@ -61,7 +70,11 @@ class Drone extends Enemy
 					currentState = DroneState.EXPLODING;
 				
 			case DroneState.EXPLODING:
-				animation.play("explode");
+				if (animation.name != "explode")
+				{
+					animation.play("explode");
+					explodingSound.play();
+				}
 				
 				if (animation.name == "explode" && animation.finished)
 					kill();

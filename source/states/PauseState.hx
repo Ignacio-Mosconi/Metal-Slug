@@ -10,7 +10,7 @@ class PauseState extends FlxSubState
 {
 	private var pause:FlxText;
 	private var resumeButton:FlxButton;
-	private var exitButton:FlxButton;
+	private var quitButton:FlxButton;
 	
 	public function new(BGColor:FlxColor=0x22000000) 
 	{
@@ -25,18 +25,19 @@ class PauseState extends FlxSubState
 		resumeButton = new FlxButton(0, 0, "Resume", clickResume);
 		resumeButton.scale.set(3 / 2, 3 / 2);
 		resumeButton.screenCenter();
+		resumeButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav, 1, false, null, false, false, null, close);
 		add(resumeButton);
 		
-		exitButton = new FlxButton(0, FlxG.height * 3 / 5, "Quit", clickQuit);
-		exitButton.scale.set(4 / 3, 4 / 3);
-		exitButton.screenCenter(X);
-		add(exitButton);
+		quitButton = new FlxButton(0, FlxG.height * 3 / 5, "Quit", clickQuit);
+		quitButton.scale.set(4 / 3, 4 / 3);
+		quitButton.screenCenter(X);
+		quitButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
+		add(quitButton);
 	}
 	
 	private function clickResume():Void
 	{
 		FlxG.mouse.visible = false;
-		close();
 	}
 	
 	private function clickQuit():Void

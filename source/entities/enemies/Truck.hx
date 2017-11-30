@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.effects.particles.FlxEmitter;
 import flixel.effects.particles.FlxParticle;
 import flixel.group.FlxGroup;
+import flixel.system.FlxSound;
 
 enum TruckState
 {
@@ -21,16 +22,17 @@ class Truck extends Enemy
 	private var spawnTimer:Float;
 	private var explosion:FlxTypedEmitter<FlxParticle>;
 	private var unitsSpawned:Int;
+	private var truckMovingSound:FlxSound;
+	private var truckExplodingSound:FlxSound;
 	
 	public function new(?X, ?Y, enemies:FlxTypedGroup<Enemy>) 
 	{
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.truck__png, true, 160, 96, false);
-		animation.add("parked", [0], 30, false, false, false);
-		animation.add("move", [0, 1], 12, true, false, false);
-		animation.add("getHit", [2], 30, false, false, false);
-		animation.add("explode", [3, 4, 5, 6, 7], 12, false, false, false);
+		animationsSetUp();
+		soundEffectsSetUp();
+		
 		currentState = TruckState.PARKED;
 		hitPoints = Reg.truckHitPoints;
 		speed = Reg.truckSpeed;
@@ -43,6 +45,7 @@ class Truck extends Enemy
 	
 	override public function update(elapsed:Float)
 	{
+		checkLeftBoundary();
 		stateMachine(elapsed);
 		
 		super.update(elapsed);
@@ -63,6 +66,7 @@ class Truck extends Enemy
 				
 			case TruckState.MOVING:
 				animation.play("move");
+				truckMovingSound.play();
 				
 				if (camera.scroll.x + FlxG.width / 2 >= x)
 				{
@@ -72,6 +76,7 @@ class Truck extends Enemy
 				
 			case TruckState.SPAWNING_UNITS:
 				animation.play("parked");
+				truckMovingSound.stop();
 				
 				velocity.x = 0;
 				spawnEnemy(elapsed);
@@ -87,6 +92,7 @@ class Truck extends Enemy
 				
 			case TruckState.CHARGING:
 				animation.play("move");
+				truckMovingSound.play();
 				
 				if (x + width < camera.scroll.x)
 					kill();
@@ -98,6 +104,7 @@ class Truck extends Enemy
 				if (animation.name != "explode")
 				{
 					animation.play("explode");
+					truckExplodingSound.play();
 					velocity.y = 100;
 				}
 				
@@ -141,6 +148,28 @@ class Truck extends Enemy
 		explosion.start(true, 0, 0);
 		explosion.lifespan.set(0.4, 0.9);
 		FlxG.state.add(explosion);
+	}
+	
+	private function animationsSetUp():Void 
+	{
+		animation.add("parked", [0], 30, false, false, false);
+		animation.add("move", [0, 1], 12, true, false, false);
+		animation.add("getHit", [2], 30, false, false, false);
+		animation.add("explode", [3, 4, 5, 6, 7], 12, false, false, false);
+	}
+	
+	private function soundEffectsSetUp():Void 
+	{
+		truckMovingSound = FlxG.sound.load(AssetPaths.truckEngine__wav, 0.9);
+		truckMovingSound.proximity(x, y, followingTarget, FlxG.width);
+		truckExplodingSound = FlxG.sound.load(AssetPaths.explosion__wav);
+		truckExplodingSound.proximity(x, y, followingTarget, FlxG.width);
+	}
+	
+	private function checkLeftBoundary():Void 
+	{
+		if (x < camera.scroll.x - 160)
+			kill();
 	}
 	
 	override public function getDamage(?damage:Int):Void

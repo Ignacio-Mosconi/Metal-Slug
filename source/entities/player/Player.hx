@@ -59,6 +59,7 @@ class Player extends Entity
 	private var jumpSound:FlxSound;
 	private var knifeSlashSound:FlxSound;
 	private var pistolShotSound:FlxSound;
+	private var pistolEmptyMagSound:FlxSound;
 	private var pistolReloadSound:FlxSound;
 	private var throwGrenadeSound:FlxSound;
 	private var pickUpCollectableSound:FlxSound;
@@ -217,7 +218,6 @@ class Player extends Entity
 						}
 					}
 				}
-
 
 			case State.PREJUMPING:
 				if (animation.name != "preJump")
@@ -635,6 +635,8 @@ class Player extends Entity
 		}
 		else
 		{
+			if (FlxG.keys.justPressed.A && magAmmo == 0)
+				pistolEmptyMagSound.play();
 			shootingCooldown += time;
 			if (shootingCooldown >= Reg.pistolRateOfFire)
 				hasJustShot = false;
@@ -707,6 +709,7 @@ class Player extends Entity
 		jumpSound = FlxG.sound.load(AssetPaths.jump__wav);
 		knifeSlashSound = FlxG.sound.load(AssetPaths.knifeSlash__wav);
 		pistolShotSound = FlxG.sound.load(AssetPaths.pistolShot__wav);
+		pistolEmptyMagSound = FlxG.sound.load(AssetPaths.emptyMag__wav);
 		pistolReloadSound = FlxG.sound.load(AssetPaths.pistolReload__wav);
 		throwGrenadeSound = FlxG.sound.load(AssetPaths.throwGrenade__wav);
 		pickUpCollectableSound = FlxG.sound.load(AssetPaths.pickUpCollectable__wav);

@@ -141,6 +141,7 @@ class PlayState extends FlxState
 			case "Player":
 				player = new Player(x, y);
 				entities.add(player);
+				FlxG.camera.scroll.x = player.x - 96;
 			case "Drone":
 				var drone = new Drone(x, y);
 				enemies.add(drone);
@@ -225,8 +226,14 @@ class PlayState extends FlxState
 	
 	private function knifeEnemyCollision(k:Knife, e:Enemy):Void
 	{
-		if (!e.isGettingDamage)
+		if (!e.isGettingDamage && e.getType() != "Truck")
 			e.getDamage();
+		else
+			if (!e.isGettingDamage)
+			{
+				k.kill();
+				e.getDamage();
+			}
 	}
 	
 	private function grenadeEnemyCollision(eB:ExplosionBox, e:Enemy):Void
@@ -296,6 +303,7 @@ class PlayState extends FlxState
 	{
 		if (FlxG.keys.justPressed.ENTER)
 		{
+			FlxG.sound.play(AssetPaths.select__wav);
 			hud.visible = false;
 			FlxG.mouse.visible = true;
 			openSubState(new PauseState());

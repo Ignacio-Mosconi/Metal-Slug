@@ -20,6 +20,6 @@ class CameraWall extends FlxSprite
 	{
 		super.update(elapsed);
 		
-		x = (position == FlxObject.LEFT) ? camera.scroll.x: camera.scroll.x + FlxG.width;
+		x = (position == FlxObject.LEFT) ? camera.scroll.x: camera.scroll.x + FlxG.width - 1;
 	}
 }

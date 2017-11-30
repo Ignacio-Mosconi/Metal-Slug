@@ -22,6 +22,7 @@ class RifleSoldier extends Enemy
 	public var rifleBullets(get, null):FlxTypedGroup<Bullet>;
 	private var backingOffTime:Float;
 	private var footStepSound:FlxSound;
+	private var detectPlayerSound:FlxSound;
 	private var rifleShotSound:FlxSound;
 	private var deathSound:FlxSound;
 	
@@ -79,7 +80,10 @@ class RifleSoldier extends Enemy
 					
 			case RifleSoldierState.DETECTING_PLAYER:
 				if (animation.name != "detectPlayer")
+				{
 					animation.play("detectPlayer");
+					detectPlayerSound.play();
+				}
 				
 				if (animation.name == "detectPlayer" && animation.finished && velocity.y == 0)
 				{
@@ -222,11 +226,14 @@ class RifleSoldier extends Enemy
 	{
 		footStepSound = FlxG.sound.load(AssetPaths.footStep__wav, 0.03);
 		footStepSound.proximity(x, y, followingTarget, FlxG.width / 10);
+		detectPlayerSound = FlxG.sound.load(AssetPaths.enemyDetectingPlayer__wav, 0.5);
+		detectPlayerSound.proximity(x, y, followingTarget, FlxG.width);
 		rifleShotSound = FlxG.sound.load(AssetPaths.rifleShot__wav, 0.75);
 		rifleShotSound.proximity(x, y, followingTarget, FlxG.width);
 		deathSound = FlxG.sound.load(AssetPaths.enemyDeath__wav, 0.75);
 		deathSound.proximity(x, y, followingTarget, FlxG.width);
 	}
+	
 	private function checkHitboxOffset():Void 
 	{
 		if (facing == FlxObject.LEFT)

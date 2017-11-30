@@ -38,6 +38,7 @@ class MenuState extends FlxState
 		playButton = new FlxButton(0, 0, "Play", clickPlay);
 		playButton.scale.set(3 / 2, 3 / 2);
 		playButton.screenCenter();
+		playButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 		add(playButton);
 	
 		exitButton = new FlxButton(0, FlxG.height * 3 / 5, "Exit", clickExit);
