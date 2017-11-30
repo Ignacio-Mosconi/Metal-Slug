@@ -1,7 +1,6 @@
 package environment;
 
 import flixel.FlxSprite;
-import flixel.system.FlxAssets.FlxGraphicAsset;
 
 class Object extends FlxSprite 
 {

@@ -1,7 +1,6 @@
 package others;
 
 import flixel.FlxSprite;
-import flixel.system.FlxAssets.FlxGraphicAsset;
 
 class Collectable extends FlxSprite 
 {

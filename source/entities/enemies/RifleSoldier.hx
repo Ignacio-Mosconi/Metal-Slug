@@ -21,6 +21,8 @@ class RifleSoldier extends Enemy
 	private var distanceWalked:Int;
 	public var rifleBullets(get, null):FlxTypedGroup<Bullet>;
 	private var backingOffTime:Float;
+	private var hasJustCollided:Bool;
+	private var collisionTimer:Float;
 	private var footStepSound:FlxSound;
 	private var detectPlayerSound:FlxSound;
 	private var rifleShotSound:FlxSound;
@@ -47,6 +49,8 @@ class RifleSoldier extends Enemy
 		velocity.x = -speed;
 		acceleration.y = Reg.gravity;
 		backingOffTime = 0;
+		hasJustCollided = false;
+		collisionTimer = 0;
 		
 		// Weapons Creation
 		rifleBullets = new FlxTypedGroup<Bullet>();
@@ -55,9 +59,10 @@ class RifleSoldier extends Enemy
 	
 	override public function update(elapsed:Float):Void
 	{
-		stateMachine(elapsed);
+		stateMachine(elapsed);		
 		checkHitboxOffset();
-		checkLeftBoundary();
+		checkLeftBoundary();	
+		collisionLogic(elapsed);
 		
 		super.update(elapsed);		
 	}
@@ -69,6 +74,7 @@ class RifleSoldier extends Enemy
 			case RifleSoldierState.WANDERING:
 				animation.play("move");
 				footStepSound.play(false, 0, 700);
+				footStepSound.setPosition(x + width, y + height);
 				
 				moveAround();
 				
@@ -104,9 +110,11 @@ class RifleSoldier extends Enemy
 					facing = (x > followingTarget.x) ? FlxObject.RIGHT: FlxObject.LEFT;
 					currentState = RifleSoldierState.BACKING_OFF;
 				}
+				
 			case RifleSoldierState.BACKING_OFF:
 				animation.play("move");
 				footStepSound.play(false, 0, 700);
+				footStepSound.setPosition(x + width, y + height);
 				
 				backingOffTime += elapsed;
 				if (backingOffTime >= Reg.rifleSoldierBackOffTime)
@@ -230,8 +238,28 @@ class RifleSoldier extends Enemy
 		detectPlayerSound.proximity(x, y, followingTarget, FlxG.width);
 		rifleShotSound = FlxG.sound.load(AssetPaths.rifleShot__wav, 0.75);
 		rifleShotSound.proximity(x, y, followingTarget, FlxG.width);
-		deathSound = FlxG.sound.load(AssetPaths.enemyDeath__wav, 0.75);
+		deathSound = FlxG.sound.load(AssetPaths.enemyDeath__wav, 0.5);
 		deathSound.proximity(x, y, followingTarget, FlxG.width);
+	}
+	
+	private function collisionLogic(time:Float):Void 
+	{
+		if (isTouching(FlxObject.WALL) && !hasJustCollided)
+		{
+			distanceWalked = 0;
+			walkOrigin = Std.int(x);
+			hasJustCollided = true;
+			collisionTimer = 0;
+			facing = (velocity.x < 0) ? FlxObject.RIGHT: FlxObject.LEFT;
+			velocity.x = (velocity.x < 0) ? speed: -speed;
+		}
+	
+		if (hasJustCollided)
+		{
+			collisionTimer += time;
+			if (collisionTimer >= 0.2)
+				hasJustCollided = false;
+		}
 	}
 	
 	private function checkHitboxOffset():Void 

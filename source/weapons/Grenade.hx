@@ -6,8 +6,6 @@ import flixel.effects.particles.FlxEmitter.FlxEmitterMode;
 import flixel.effects.particles.FlxEmitter.FlxTypedEmitter;
 import flixel.effects.particles.FlxParticle;
 import flixel.system.FlxSound;
-import flixel.util.FlxColor;
-import flixel.util.helpers.FlxRangeBounds;
 
 enum GrenadeState
 {

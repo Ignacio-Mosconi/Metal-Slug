@@ -13,7 +13,6 @@ import others.HUD;
 import weapons.Weapon;
 import weapons.Bullet;
 import weapons.ExplosionBox;
-import weapons.Grenade;
 import weapons.Grenade.GrenadeState;
 import weapons.Knife;
 import flixel.FlxG;
@@ -22,9 +21,7 @@ import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
-import flixel.util.FlxCollision;
 import flixel.util.FlxColor;
-import flixel.addons.effects.FlxTrail;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 
@@ -141,7 +138,7 @@ class PlayState extends FlxState
 			case "Player":
 				player = new Player(x, y);
 				entities.add(player);
-				FlxG.camera.scroll.x = player.x - 96;
+				camera.scroll.x = player.x - 96;
 			case "Drone":
 				var drone = new Drone(x, y);
 				enemies.add(drone);
@@ -154,6 +151,9 @@ class PlayState extends FlxState
 			case "Barrel":
 				var barrel = new Barrel(x, y);
 				objects.add(barrel);
+			case "Collectable":
+				var collectable = new Collectable(x, y, Reg.random.int(0, Reg.numberOfCollectables - 1));
+				collectables.add(collectable);
 		}
 	}
 	
