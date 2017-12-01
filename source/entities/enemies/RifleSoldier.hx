@@ -242,7 +242,8 @@ class RifleSoldier extends Enemy
 		deathSound.proximity(x, y, followingTarget, FlxG.width);
 	}
 	
-	private function collisionLogic(time:Float):Void 
+	private function collisionLogic(time:Float):Void	
+	// I would be pleased if someone told me why it doesn´t work while colliding with something to the left.
 	{
 		if (isTouching(FlxObject.WALL) && !hasJustCollided)
 		{
