@@ -1,5 +1,6 @@
 package states;
 
+import entities.enemies.Boss;
 import entities.enemies.Truck;
 import entities.player.Player;
 import entities.enemies.Enemy;
@@ -25,10 +26,13 @@ import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import weapons.Nuke;
+import weapons.Weapon;
 
 class PlayState extends FlxState
 {
 	private var player:Player;
+	private var boss:Boss;
 	private var loader:FlxOgmoLoader;
 	private var tilemap:FlxTilemap;
 	private var cameraWalls:FlxTypedGroup<CameraWall>;
@@ -104,6 +108,10 @@ class PlayState extends FlxState
 		for (enemy in enemies)
 			if (enemy.getType() == "RifleSoldier")
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
+		FlxG.overlap(boss.accessWeapon(), player, enemyNukePlayerCollision);
+		for (nuke in boss.accessWeapon())
+			if (nuke.hasJustExploded)
+				FlxG.overlap(nuke.explosionBox, player, enemyExplosionPlayerCollision);
 		// Weapons - Environment
 		for (object in objects)
 			if (object.getType() == "Barrel")
@@ -114,6 +122,8 @@ class PlayState extends FlxState
 					if (grenade.currentState == GrenadeState.EXPLODING)
 						FlxG.overlap(grenade.explosionBox, object, weaponObjectCollision);
 			}
+		for (nuke in boss.accessWeapon())
+			FlxG.collide(nuke, tilemap, nukeTilemapCollision);
 		// Player - Collectables
 		FlxG.overlap(player, collectables, playerCollectableCollision);
 		
@@ -166,6 +176,9 @@ class PlayState extends FlxState
 			case "Truck":
 				var truck = new Truck(x, y, enemies);
 				enemies.add(truck);
+			case "Boss":
+				boss = new Boss(x, y);
+				enemies.add(boss);
 			case "Barrel":
 				var barrel = new Barrel(x, y);
 				objects.add(barrel);
@@ -238,7 +251,7 @@ class PlayState extends FlxState
 		if (!e.isGettingDamage)
 		{
 			e.getDamage();
-			player.pistolBullets.remove(b);
+			b.kill();
 		}
 	}
 	
@@ -262,13 +275,36 @@ class PlayState extends FlxState
 			}
 	}
 	
-	private function enemyBulletPlayerCollision(b:Bullet, p:Player):Void 
+	private function enemyExplosionPlayerCollision(eB:ExplosionBox, p:Player):Void
 	{
 		if (!p.hasJustBeenHit && !p.isInvincible && p.currentState != State.DYING)
 		{
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
 			p.getHit();
+			eB.destroy();
+		}
+	}
+	
+	private function enemyBulletPlayerCollision(w:Weapon, p:Player):Void 
+	{
+		if (!p.hasJustBeenHit && !p.isInvincible && p.currentState != State.DYING)
+		{
+			camera.shake(0.01, 0.25);
+			camera.flash(FlxColor.RED, 0.25);
+			p.getHit();
+			w.kill();
+		}
+	}
+	
+	private function enemyNukePlayerCollision(n:Nuke, p:Player):Void 
+	{
+		if (!p.hasJustBeenHit && !p.isInvincible && p.currentState != State.DYING)
+		{
+			camera.shake(0.01, 0.25);
+			camera.flash(FlxColor.RED, 0.25);
+			p.getHit();
+			n.explode();
 		}
 	}
 	
@@ -287,6 +323,11 @@ class PlayState extends FlxState
 			if (p.hasJustPickedUpCollectable)
 				c.bePicked(p);
 		}
+	}
+	
+	private function nukeTilemapCollision(n:Nuke, t:FlxTilemap):Void
+	{
+		n.explode();
 	}
 	
 	// Other Methods

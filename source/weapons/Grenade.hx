@@ -89,7 +89,7 @@ class Grenade extends Weapon
 		explosion.lifespan.set(0.25, 0.75);
 		FlxG.state.add(explosion);
 		
-		explosionBox = new ExplosionBox(x + width / 2 - 96 / 2, y + height - 96);
+		explosionBox = new ExplosionBox(x + width / 2 - 48, y + height - 96);
 		FlxG.state.add(explosionBox);
 	}
 	

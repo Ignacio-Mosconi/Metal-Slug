@@ -6,7 +6,6 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import weapons.Weapon;
 
 enum RifleSoldierState
 {

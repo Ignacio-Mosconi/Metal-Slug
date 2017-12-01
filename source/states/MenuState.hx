@@ -2,25 +2,27 @@ package states;
 
 import flash.system.System;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.addons.display.FlxBackdrop;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 
 class MenuState extends FlxState
 {
-	private var background:FlxBackdrop;
 	private var title:FlxText;
 	private var playButton:FlxButton;
 	private var exitButton:FlxButton;
+	private var background:FlxSprite;
 
 	override public function create():Void
 	{
 		FlxG.camera.fade(FlxColor.BLACK, 1, true, null, false);
-
+		
 		super.create();
 
+		background = new FlxSprite(0, 0, AssetPaths.skyBackdrop__png);
+		add(background);
 		titleSetUp();
 		buttonsSetUp();
 	}

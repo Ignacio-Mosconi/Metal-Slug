@@ -3,7 +3,6 @@ package entities.enemies;
 import entities.Entity;
 import entities.player.Player;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import weapons.Weapon;
 
 class Enemy extends Entity
 {
