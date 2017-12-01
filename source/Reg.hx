@@ -14,7 +14,7 @@ class Reg
 	static public var pistolBulletSpeed:Int = 440;
 	static public var pistolRateOfFire:Float = 0.1;
 	static public var pistolMagSize:Int = 7;
-	static public var pistolMaxAmmo:Int = 56;
+	static public var pistolMaxAmmo:Int = 70;
 	static public var grenadeSpeed:Int = 300;
 	static public var grenadeTimer:Float = 1.5;
 	static public var maxGrenades:Int = 3;

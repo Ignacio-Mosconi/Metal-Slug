@@ -258,7 +258,7 @@ class PlayState extends FlxState
 	
 	private function knifeEnemyCollision(k:Knife, e:Enemy):Void
 	{
-		if (!e.isGettingDamage && e.getType() != "Truck")
+		if (!e.isGettingDamage && e.getType() != "Truck" && e.getType != "Boss")
 			e.getDamage();
 		else
 			k.kill();
