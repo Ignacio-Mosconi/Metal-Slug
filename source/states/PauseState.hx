@@ -25,7 +25,7 @@ class PauseState extends FlxSubState
 		resumeButton = new FlxButton(0, 0, "Resume", clickResume);
 		resumeButton.scale.set(3 / 2, 3 / 2);
 		resumeButton.screenCenter();
-		resumeButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav, 1, false, null, false, false, null, close);
+		resumeButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav, 1, false, null, false, false, null);
 		add(resumeButton);
 		
 		quitButton = new FlxButton(0, FlxG.height * 3 / 5, "Quit", clickQuit);
@@ -38,6 +38,7 @@ class PauseState extends FlxSubState
 	private function clickResume():Void
 	{
 		FlxG.mouse.visible = false;
+		close();
 	}
 	
 	private function clickQuit():Void
