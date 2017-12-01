@@ -242,6 +242,7 @@ class Player extends Entity
 				if (animation.name != "jump")
 					animation.play("jump");
 				
+				moveInTheAir();
 				stab();
 				shoot(elapsed);
 				throwGrenade();
@@ -570,8 +571,7 @@ class Player extends Entity
 					if (animation.name == "die" && animation.finished)
 						kill();
 		}
-	}
-	
+	}	
 	// Action Methods
 	private function move():Void
 	{
@@ -673,6 +673,19 @@ class Player extends Entity
 		}
 	}
 	
+	private function moveInTheAir():Void
+	{
+		if (FlxG.keys.pressed.LEFT)
+		{
+			facing = FlxObject.LEFT;
+			velocity.x = (isInvincible) ? -Reg.playerHopingSpeedWithPowerUp: -Reg.playerHopingSpeed;
+		}
+		if (FlxG.keys.pressed.RIGHT)
+		{
+			facing = FlxObject.RIGHT;
+			velocity.x = (isInvincible) ? Reg.playerHopingSpeedWithPowerUp: Reg.playerHopingSpeed;
+		}
+	}
 	// Other Methods
 	private function checkHitboxOffset():Void 
 	{
@@ -737,6 +750,7 @@ class Player extends Entity
 		hasJustThrownGrenade = false;
 		hasJustReloaded = false;
 		height = Reg.playerStandingHeight;
+		offset.y = 0;
 		currentState = State.JUMPING;
 	}
 	
@@ -855,8 +869,7 @@ class Player extends Entity
 			invincibilityTime = 0;
 			kill();
 		}
-	}
-	
+	}	
 	// Getters & Setters	
 	function get_pistolBullets():FlxTypedGroup<Bullet> 
 	{

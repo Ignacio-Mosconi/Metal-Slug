@@ -29,10 +29,12 @@ class Truck extends Enemy
 	{
 		super(X, Y);
 		
+		// Graphics, Animations & Sound effects
 		loadGraphic(AssetPaths.truck__png, true, 160, 96, false);
 		animationsSetUp();
 		soundEffectsSetUp();
 		
+		// Attributes Initialization
 		currentState = TruckState.PARKED;
 		hitPoints = Reg.truckHitPoints;
 		speed = Reg.truckSpeed;
@@ -117,7 +119,7 @@ class Truck extends Enemy
 					kill();	
 		}
 	}
-	
+	// Action Methods
 	private function spawnEnemy(time:Float):Void 
 	{
 		if (!hasJustSpawnedEnemy)
@@ -149,7 +151,7 @@ class Truck extends Enemy
 		explosion.lifespan.set(0.4, 0.9);
 		FlxG.state.add(explosion);
 	}
-	
+	// Other Methods
 	private function animationsSetUp():Void 
 	{
 		animation.add("parked", [0], 30, false, false, false);

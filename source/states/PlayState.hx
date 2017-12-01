@@ -138,8 +138,7 @@ class PlayState extends FlxState
 		checkPauseCondition();
 		checkLoseCondition();
 		checkWinCondition();
-	}
-	
+	}	
 	// Set Up Methods
 	private function tilemapSetUp():Void 
 	{
@@ -222,8 +221,7 @@ class PlayState extends FlxState
 		for (enemy in enemies)
 			if (enemy.getType() != "Drone")
 				enemy.setFollowingTarget(player);
-	}
-	
+	}	
 	// Collision Methods	
 	private function entityTileMapCollision(e:Dynamic, t:FlxTilemap):Void 
 	{
@@ -329,8 +327,7 @@ class PlayState extends FlxState
 	private function nukeTilemapCollision(n:Nuke, t:FlxTilemap):Void
 	{
 		n.hasJustCollided = true;
-	}
-	
+	}	
 	// Other Methods
 	private function garbageCollector():Void	// Let's get rid of the nasty trash!
 	{
@@ -381,8 +378,7 @@ class PlayState extends FlxState
 			camera.setScrollBounds(camera.scroll.x, loader.width, 0, loader.height);
 		else
 			camera.setScrollBounds(loader.width - FlxG.width, loader.width, 0, loader.height);
-	}
-	
+	}	
 	// Substates Methods
 	private function checkPauseCondition():Void 
 	{

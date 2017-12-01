@@ -10,8 +10,7 @@ import flixel.util.FlxColor;
 
 class MenuState extends FlxState
 {
-	private var title:FlxText;
-	private var subtitle:FlxText;
+	private var title:FlxSprite;
 	private var playButton:FlxButton;
 	private var exitButton:FlxButton;
 	private var background:FlxSprite;
@@ -29,18 +28,10 @@ class MenuState extends FlxState
 	}
 
 	private function titleSetUp():Void 
-	{
-		title = new FlxText(0, FlxG.height / 4 - 32, 0, "Super Lieutenant 001:", 28, true);
-		title.color = 0xFF002700;
-		title.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF138735, 2, 1);
+	{		
+		title = new FlxSprite(0, FlxG.height / 4 - 60, AssetPaths.title__png);
 		title.screenCenter(X);
 		add(title);
-		
-		subtitle = new FlxText(0, FlxG.height / 4, 0, "The Summer Soldier", 22, true);
-		subtitle.color = 0xFF002700;
-		subtitle.setBorderStyle(FlxTextBorderStyle.SHADOW, 0xFF138735, 2, 1);
-		subtitle.screenCenter(X);
-		add(subtitle);
 	}
 	
 	private function buttonsSetUp():Void 

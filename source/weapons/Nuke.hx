@@ -79,6 +79,5 @@ class Nuke extends Weapon
 	function set_hasJustCollided(value:Bool):Bool 
 	{
 		return hasJustCollided = value;
-	}
-	
+	}	
 }

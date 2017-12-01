@@ -14,6 +14,6 @@ class Entity extends FlxSprite
 	
 	public function getType():String
 	{
-		return "Enitity";
+		return "Entity";
 	}
 }

@@ -139,8 +139,7 @@ class Boss extends Enemy
 		explosion.start(true, 0, 0);
 		explosion.lifespan.set(0.4, 0.9);
 		FlxG.state.add(explosion);
-	}
-	
+	}	
 	//Other Methods	
 	private function checkAppearance():Void 
 	{
@@ -178,8 +177,10 @@ class Boss extends Enemy
 	
 	private function soundEffectsSetUp():Void 
 	{
-		flyingSound = FlxG.sound.load(AssetPaths.bossFlying__wav);
+		flyingSound = FlxG.sound.load(AssetPaths.bossFlying__wav, 0.9);
+		flyingSound.proximity(x, y, followingTarget, FlxG.width);
 		explodingSound = FlxG.sound.load(AssetPaths.explosion__wav);
+		explodingSound.proximity(x, y, followingTarget, FlxG.width);
 	}
 	
 	override public function getDamage(?damage:Int)

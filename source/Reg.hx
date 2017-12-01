@@ -10,7 +10,9 @@ class Reg
 	static public var playerJumpSpeed:Int = -500;
 	static public var playerStandingHeight:Int = 64;
 	static public var playerCrouchedHeight:Int = 48;
-	// Wapons
+	static public var playerHopingSpeed:Int = 160;
+	static public var playerHopingSpeedWithPowerUp:Int = 260;
+	// Weapons
 	static public var pistolBulletSpeed:Int = 440;
 	static public var pistolRateOfFire:Float = 0.1;
 	static public var pistolMagSize:Int = 7;
@@ -44,6 +46,5 @@ class Reg
 	// Collectables
 	static public var numberOfCollectables:Int = 5;
 	static public var invincibilityPowerUpTime:Float = 10;
-	static public var scoreCollectable:Int = 30;
-	
+	static public var scoreCollectable:Int = 30;	
 }

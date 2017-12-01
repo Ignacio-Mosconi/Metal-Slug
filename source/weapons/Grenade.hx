@@ -119,6 +119,5 @@ class Grenade extends Weapon
 	function get_explosionBox():ExplosionBox 
 	{
 		return explosionBox;
-	}
-	
+	}	
 }

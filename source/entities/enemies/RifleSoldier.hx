@@ -233,7 +233,7 @@ class RifleSoldier extends Enemy
 	private	function soundEffectsSetUp():Void
 	{
 		footStepSound = FlxG.sound.load(AssetPaths.footStep__wav, 0.03);
-		footStepSound.proximity(x, y, followingTarget, FlxG.width / 10);
+		footStepSound.proximity(x, y + height, followingTarget, FlxG.width / 10);
 		detectPlayerSound = FlxG.sound.load(AssetPaths.enemyDetectingPlayer__wav, 0.5);
 		detectPlayerSound.proximity(x, y, followingTarget, FlxG.width);
 		rifleShotSound = FlxG.sound.load(AssetPaths.rifleShot__wav, 0.75);

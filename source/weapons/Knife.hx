@@ -20,6 +20,5 @@ class Knife extends Weapon
 		super.reset(X, Y);
 		
 		animation.play("knifeAttack");
-	}
-	
+	}	
 }

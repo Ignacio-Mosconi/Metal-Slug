@@ -22,6 +22,7 @@ class Drone extends Enemy
 	{
 		super(X, Y);
 		
+		// Graphics, Animation & Sound Effects
 		loadGraphic(AssetPaths.drone__png, true, 32, 32, false);
 		animation.add("fly", [0, 1, 2], 12, true, false, false);
 		animation.add("explode", [3, 4, 5, 6, 7], 8, false, false, false);
@@ -30,6 +31,7 @@ class Drone extends Enemy
 		explodingSound = FlxG.sound.load(AssetPaths.droneExploding__wav, 0.9);
 		explodingSound.proximity(x, y, followingTarget, FlxG.width);
 		
+		// Attributes Initialization
 		speed = Reg.random.int(-120, -80);
 		amplitude = Reg.random.int(32, 64);
 		frequency = Math.PI;
@@ -80,7 +82,7 @@ class Drone extends Enemy
 					kill();
 		}
 	}
-	
+	// Other Methods
 	override public function getDamage(?damage:Int):Void
 	{
 		super.getDamage();
