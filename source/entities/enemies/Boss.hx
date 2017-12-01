@@ -145,6 +145,7 @@ class Boss extends Enemy
 		{
 			super.getDamage();
 			Reg.score += Reg.bossScore;
+			followingTarget.
 		}
 	}
 	

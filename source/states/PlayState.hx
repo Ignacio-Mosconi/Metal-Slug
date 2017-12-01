@@ -110,7 +110,7 @@ class PlayState extends FlxState
 				FlxG.overlap(enemy.accessWeapon(), player, enemyBulletPlayerCollision);
 		FlxG.overlap(boss.accessWeapon(), player, enemyNukePlayerCollision);
 		for (nuke in boss.accessWeapon())
-			if (nuke.hasJustExploded)
+			if (nuke.currentState == NukeState.EXPLODING)
 				FlxG.overlap(nuke.explosionBox, player, enemyExplosionPlayerCollision);
 		// Weapons - Environment
 		for (object in objects)
@@ -281,8 +281,8 @@ class PlayState extends FlxState
 		{
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
-			p.getHit();
 			eB.destroy();
+			p.getHit();
 		}
 	}
 	
@@ -304,7 +304,7 @@ class PlayState extends FlxState
 			camera.shake(0.01, 0.25);
 			camera.flash(FlxColor.RED, 0.25);
 			p.getHit();
-			n.explode();
+			n.hasJustCollided = true;
 		}
 	}
 	
@@ -327,7 +327,7 @@ class PlayState extends FlxState
 	
 	private function nukeTilemapCollision(n:Nuke, t:FlxTilemap):Void
 	{
-		n.explode();
+		n.hasJustCollided = true;
 	}
 	
 	// Other Methods

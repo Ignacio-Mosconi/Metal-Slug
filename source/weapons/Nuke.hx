@@ -5,25 +5,53 @@ import flixel.effects.particles.FlxEmitter.FlxEmitterMode;
 import flixel.effects.particles.FlxEmitter.FlxTypedEmitter;
 import flixel.effects.particles.FlxParticle;
 
+enum NukeState
+{
+	FLYING;
+	EXPLODING;
+}
 class Nuke extends Weapon 
 {
+	public var currentState(get, null):NukeState;
 	private var explosion:FlxTypedEmitter<FlxParticle>;
 	public var explosionBox(get, null):ExplosionBox;
-	public var hasJustExploded(get, null):Bool;
+	public var hasJustCollided(default, set):Bool;
 	
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
 		
 		loadGraphic(AssetPaths.nuke__png, false, 16, 12, false);
+		currentState = NukeState.FLYING;
 		acceleration.y = Reg.gravity;
 		angularVelocity = -200;
+		hasJustCollided = false;
 	}
 	
-	public function explode():Void
+	override public function update(elapsed:Float)
 	{
-		hasJustExploded = true;
+		stateMachine();
 		
+		super.update(elapsed);
+	}
+	
+	private function stateMachine()
+	{
+		switch (currentState)
+		{
+			case NukeState.FLYING:
+				if (hasJustCollided)
+				{
+					explode();
+					currentState = NukeState.EXPLODING;
+				}
+			case NukeState.EXPLODING:
+				kill();
+		}
+	}
+	
+	private function explode():Void
+	{		
 		explosion = new FlxTypedEmitter<FlxParticle>();
 		explosion.focusOn(this);
 		explosion.launchMode = FlxEmitterMode.CIRCLE;
@@ -36,17 +64,21 @@ class Nuke extends Weapon
 		
 		explosionBox = new ExplosionBox(x + width / 2 - 96 / 2, y + height - 96);
 		FlxG.state.add(explosionBox);
-		
-		kill();		
-	}
-	
-	function get_hasJustExploded():Bool
-	{
-		return hasJustExploded;
 	}
 	
 	function get_explosionBox():ExplosionBox 
 	{
 		return explosionBox;
 	}
+	
+	function get_currentState():NukeState 
+	{
+		return currentState;
+	}
+	
+	function set_hasJustCollided(value:Bool):Bool 
+	{
+		return hasJustCollided = value;
+	}
+	
 }
