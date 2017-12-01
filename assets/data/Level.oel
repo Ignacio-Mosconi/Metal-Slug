@@ -97,7 +97,7 @@
     <Collectable id="85" x="9088" y="256" />
     <Collectable id="86" x="11040" y="192" />
     <Collectable id="87" x="12128" y="96" />
-    <Boss id="2" x="15712" y="96" />
-    <Player id="89" x="14720" y="192" />
+    <Boss id="2" x="15712" y="64" />
+    <Player id="89" x="192" y="192" />
   </Entities>
 </level>

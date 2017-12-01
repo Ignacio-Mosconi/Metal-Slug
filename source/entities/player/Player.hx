@@ -52,7 +52,6 @@ class Player extends Entity
 	public var hasJustBeenHit(get, null):Bool;
 	@:isVar public var hasJustPickedUpCollectable(get, set):Bool;
 	public var hasLost(get, null):Bool;
-	public var hasWon(get,
 	private var powerUpState:FlxTrail;
 	public var isInvincible(get, null):Bool;
 	private var invincibilityTime:Float;

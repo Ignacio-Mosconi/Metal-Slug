@@ -137,6 +137,7 @@ class PlayState extends FlxState
 		// Substates Checking
 		checkPauseCondition();
 		checkLoseCondition();
+		checkWinCondition();
 	}
 	
 	// Set Up Methods
@@ -404,5 +405,16 @@ class PlayState extends FlxState
 			FlxG.mouse.visible = true;
 			openSubState(new DeathState());
 		}
-	}	
+	}
+	
+	private function checkWinCondition():Void
+	{
+		if (!boss.alive)
+		{
+			theme.pause();
+			hud.visible = false;
+			FlxG.mouse.visible = true;
+			openSubState(new WinState());
+		}
+	}
 }
