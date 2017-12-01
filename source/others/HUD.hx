@@ -1,5 +1,6 @@
 package others;
 
+import entities.enemies.Boss;
 import entities.player.Player;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -21,8 +22,9 @@ class HUD extends FlxTypedGroup<FlxSprite>
 	private var score:FlxText;
 	private var playerMagBar:FlxBar;
 	private var playerPowerUpBar:FlxBar;
+	private var bossHealthBar:FlxBar;
 	
-	public function new(player:Player)
+	public function new(player:Player, boss:Boss)
 	{
 		super();
 		
@@ -33,10 +35,10 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		scoreSetUp();
 		playerMagBarSetUp(player);
 		powerUpBarSetUp(player);
-
+		bossHealthBarSetUp(boss);
 	}
 	
-	public function updateHUD(Lives:Int, Ammo:Int, Grenades:Int, Score:Int, PowerUp:Bool):Void
+	public function updateHUD(Lives:Int, Ammo:Int, Grenades:Int, Score:Int, PowerUp:Bool, BossFight:Bool):Void
 	{
 		lives.text = Std.string(Lives);
 		lives.color = (Lives < 2) ? FlxColor.RED: FlxColor.WHITE;
@@ -50,6 +52,8 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		score.text = "Score: " + Std.string(Score);
 		
 		playerPowerUpBar.visible = PowerUp ? true: false;
+		
+		bossHealthBar.visible = BossFight ? true: false;
 	}
 	
 	private function backgroundSetUp():Void 
@@ -117,11 +121,19 @@ class HUD extends FlxTypedGroup<FlxSprite>
 		add(playerMagBar);
 	}
 	
-	private function powerUpBarSetUp(player:entities.player.Player) 
+	private function powerUpBarSetUp(player:Player) 
 	{
 		playerPowerUpBar = new FlxBar(4, FlxG.height / 4, FlxBarFillDirection.BOTTOM_TO_TOP, 12, 100, player, "invincibilityTime", 0, Reg.invincibilityPowerUpTime, true);
 		playerPowerUpBar.createFilledBar(0xFF010101, 0xFF124597, true, FlxColor.WHITE);
 		playerPowerUpBar.scrollFactor.set(0, 0);
 		add(playerPowerUpBar);
+	}
+	
+	private function bossHealthBarSetUp(boss:Boss) 
+	{
+		bossHealthBar = new FlxBar(32, FlxG.height - 12, FlxBarFillDirection.HORIZONTAL_INSIDE_OUT, FlxG.width - 64, 12, boss, "hitPoints", 0, Reg.bossHitPoints, true);
+		bossHealthBar.createFilledBar(0xFF010101, 0xFFF92313, true, FlxColor.WHITE);
+		bossHealthBar.scrollFactor.set(0, 0);
+		add(bossHealthBar);
 	}
 }

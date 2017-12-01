@@ -827,7 +827,7 @@ class Player extends Entity
 				}
 			case 4:
 				hasJustPickedUpCollectable = true;
-				pickUpCollectable.play();s
+				pickUpCollectableSound.play();
 				Reg.score += Reg.scoreCollectable;
 		}
 	}

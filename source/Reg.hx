@@ -37,8 +37,8 @@ class Reg
 	static public var truckScore:Int = 25;
 	static public var truckSpawnLimit:Int = 7;
 	// Boss
-	static public var bossHitPoints:Int = 20;
-	static public var bossSpeed:Int = 240;
+	static public var bossHitPoints:Int = 15;
+	static public var bossSpeed:Int = 120;
 	static public var nukeTimer:Float = 2.5;
 	static public var bossScore:Int = 100;
 	// Collectables

@@ -131,8 +131,8 @@ class PlayState extends FlxState
 		if (!hud.visible)
 			hud.visible = true;
 		if (!theme.playing)
-			theme.play();
-		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score, player.isInvincible);
+			theme.play();		
+		hud.updateHUD(Player.lives, player.totalAmmo, player.grenadesAmmo, Reg.score, player.isInvincible, boss.hasAppeared);
 		
 		// Substates Checking
 		checkPauseCondition();
@@ -213,7 +213,7 @@ class PlayState extends FlxState
 	
 	private function hudSetUp():Void 
 	{
-		hud = new others.HUD(player);
+		hud = new others.HUD(player, boss);
 		add(hud);
 	}
 	
@@ -258,7 +258,7 @@ class PlayState extends FlxState
 	
 	private function knifeEnemyCollision(k:Knife, e:Enemy):Void
 	{
-		if (!e.isGettingDamage && e.getType() != "Truck" && e.getType != "Boss")
+		if (!e.isGettingDamage && e.getType() != "Truck" && e.getType() != "Boss")
 			e.getDamage();
 		else
 			k.kill();

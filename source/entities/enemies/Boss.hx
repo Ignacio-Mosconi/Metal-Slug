@@ -25,7 +25,7 @@ class Boss extends Enemy
 	private var originY:Float;
 	private var hasJustThrownNuke:Bool;
 	private var nukeTimer:Float;
-	private var hasAppeared:Bool;
+	public var hasAppeared(get, null):Bool;
 	private var hasJustChangedDirection:Bool;
 	private var collisionTimer:Float;
 	private var explosion:FlxTypedEmitter<FlxParticle>;
@@ -206,5 +206,10 @@ class Boss extends Enemy
 	override public function accessWeapon():FlxTypedGroup<Dynamic>
 	{
 		return nukes;
+	}
+	
+	function get_hasAppeared():Bool 
+	{
+		return hasAppeared;
 	}
 }
